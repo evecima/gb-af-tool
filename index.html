@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#15324a">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Apt Finder">
+  <title>Apartment Finder</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">AF</div>
+        <div>
+          <h1>Apartment Finder</h1>
+          <div class="sub">Apartment → Building</div>
+        </div>
+      </div>
+      <div id="offlineStatus" class="status">Ready</div>
+    </header>
+
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-panel="searchPanel">Apartment</button>
+        <button class="tab" data-panel="buildingPanel">Building</button>
+      </div>
+
+      <div id="searchPanel" class="panel active">
+        <label class="label" for="apt">Apartment number</label>
+        <div class="searchrow">
+          <input id="apt" type="text" inputmode="text" autocomplete="off"
+                 autocapitalize="characters" spellcheck="false"
+                 placeholder="Example: 127 or 127B" aria-label="Apartment number">
+          <button id="findBtn" class="primary">Search</button>
+        </div>
+        <div class="hint">You may enter only the number. Spaces, hyphens and lowercase letters are ignored.</div>
+        <div id="result" class="result" aria-live="polite"></div>
+        <button id="installBtn" class="primary install">Install app</button>
+      </div>
+
+      <div id="buildingPanel" class="panel">
+        <label class="label" for="building">Choose building</label>
+        <select id="building">
+          <option value="">Select a building…</option>
+        </select>
+        <div id="buildingResult"></div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Master Database v1.0 · 500 apartments · 54 buildings<br>
+      Version 2.0 · Designed for phone use and offline lookup
+    </div>
+  </main>
+
+  <script src="apartments.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

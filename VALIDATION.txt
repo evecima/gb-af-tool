@@ -1,0 +1,20 @@
+APARTMENT FINDER — MASTER DATABASE v1.0
+Validation date: 2026-08-12
+
+Records: 500
+Apartment numbers: 1–500
+Unique apartment numbers: 500
+Unique apartment IDs: 500
+Buildings: 54
+Missing numbers: None
+Duplicate numbers: None
+Duplicate apartment IDs: None
+
+Previously ambiguous records confirmed against the final list:
+239A -> Building 3785
+333B -> Building 3845
+476A -> Building 3512
+477B -> Building 3512
+500C -> Building 3512
+
+Status: VALIDATED FOR APARTMENT FINDER v2.0
