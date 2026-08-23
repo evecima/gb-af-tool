@@ -1,4 +1,4 @@
-/* v0.5.1 — strict print isolation overrides */
+/* v0.5.2 — strict print isolation overrides */
 @media print{
   html,body{background:#fff!important}
   body.print-payroll,body.print-summary,body.print-request{
@@ -44,6 +44,21 @@
     page-break-inside:avoid!important;
     page-break-after:auto!important;
   }
+
+  /* Keep the lower approvals/analysis section inside the printable width. */
+  body.print-payroll .tc-bottom{
+    grid-template-columns:minmax(0,48%) minmax(0,1fr)!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+  body.print-payroll .tc-analysis{min-width:0!important;padding-right:0!important}
+  body.print-payroll .tc-analysis-head,
+  body.print-payroll .tc-analysis-row{
+    grid-template-columns:minmax(0,1fr) 62px!important;
+    gap:4px!important;
+  }
+  body.print-payroll .tc-analysis-box{width:62px!important;max-width:100%!important}
+  body.print-payroll .tc-analysis-bracket{right:0!important}
 
   body.print-summary .summary-paper{
     display:block!important;
