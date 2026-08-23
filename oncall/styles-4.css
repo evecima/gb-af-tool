@@ -1,1 +1,86 @@
+/* v0.5.1 — strict print isolation overrides */
+@media print{
+  html,body{background:#fff!important}
+  body.print-payroll,body.print-summary,body.print-request{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
 
+  body.print-payroll .screen,
+  body.print-summary .screen,
+  body.print-request .screen{display:none!important}
+
+  body.print-payroll #payroll,
+  body.print-summary #summary,
+  body.print-request #requests{display:block!important}
+
+  body.print-payroll #payroll>*:not(#payrollPreview),
+  body.print-summary #summary>*:not(#summaryPreview),
+  body.print-request #requests>*:not(#requestPreview){display:none!important}
+
+  body.print-payroll #payrollPreview,
+  body.print-summary #summaryPreview,
+  body.print-request #requestPreview{
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:#fff!important;
+  }
+
+  body.print-payroll #payrollPreview>:not(.timecard-paper),
+  body.print-summary #summaryPreview>:not(.summary-paper),
+  body.print-request #requestPreview>:not(.maintenance-request-paper){display:none!important}
+
+  body.print-payroll .timecard-paper{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    min-height:auto!important;
+    margin:0 auto!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    page-break-after:auto!important;
+  }
+
+  body.print-summary .summary-paper{
+    display:block!important;
+    width:10.55in!important;
+    min-width:0!important;
+    min-height:7.55in!important;
+    margin:0 auto!important;
+    padding:.12in .16in!important;
+    border:0!important;
+    box-shadow:none!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    break-after:page!important;
+    page-break-after:always!important;
+  }
+  body.print-summary .summary-paper:last-child{
+    break-after:auto!important;
+    page-break-after:auto!important;
+  }
+
+  body.print-request .maintenance-request-paper{
+    display:block!important;
+    width:5.67in!important;
+    min-height:8.50in!important;
+    margin:0 auto!important;
+    padding:.12cm .15cm .10cm!important;
+    border:0!important;
+    box-shadow:none!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    page-break-after:auto!important;
+  }
+
+  body.print-payroll .timecard-paper *,
+  body.print-summary .summary-paper *,
+  body.print-request .maintenance-request-paper *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+}
