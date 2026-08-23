@@ -1,4 +1,4 @@
-/* v0.5.2 — strict print isolation overrides */
+/* v0.5.3 — strict print isolation + payroll fit/manager-note overrides */
 @media print{
   html,body{background:#fff!important}
   body.print-payroll,body.print-summary,body.print-request{
@@ -43,6 +43,36 @@
     break-inside:avoid!important;
     page-break-inside:avoid!important;
     page-break-after:auto!important;
+  }
+
+  /* Give manager notes a natural home immediately to the left of DATE.
+     Job Code is blank in our workflow, so it donates a little width. */
+  body.print-payroll .tc-main-table .tc-day-head{width:9.4%!important}
+  body.print-payroll .tc-main-table .tc-date-head{width:9.4%!important}
+  body.print-payroll .tc-main-table .tc-job-head{width:7.7%!important}
+  body.print-payroll .tc-day-wrap{
+    width:100%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:1px!important;
+  }
+  body.print-payroll .tc-day-name{
+    flex:0 0 auto!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+  }
+  body.print-payroll .tc-day-note{
+    flex:0 0 auto!important;
+    margin-left:auto!important;
+    color:#c1121f!important;
+    font-size:5.8px!important;
+    line-height:1!important;
+    font-style:italic!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    text-align:right!important;
+    overflow:visible!important;
   }
 
   /* Keep the lower approvals/analysis section inside the printable width. */
