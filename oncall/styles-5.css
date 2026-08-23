@@ -1,4 +1,4 @@
-/* v0.5.6 — borderless Payroll Notes margin + full form alignment */
+/* v0.5.7 — borderless Payroll Notes margin + full form alignment + one-sheet Summary print fit */
 .timecard-paper .tc-main-table-notes{table-layout:fixed}
 .timecard-paper .tc-main-table-notes .tc-notes-head,
 .timecard-paper .tc-main-table-notes .tc-note-cell{
@@ -102,4 +102,27 @@
   body.print-payroll .tc-analysis-head .tc-bottom-title{padding-left:30px!important}
   body.print-payroll .tc-analysis-label.main{padding-left:30px!important}
   body.print-payroll .tc-analysis-label:not(.main){padding-left:43px!important}
+
+  /* Summary print fit: preserve landscape layout, reclaim only vertical space. */
+  body.print-summary .summary-paper{
+    min-height:0!important;
+    padding:.08in .16in .06in!important;
+  }
+  body.print-summary .os-title{
+    height:34px!important;
+    margin-bottom:5px!important;
+  }
+  body.print-summary .os-top{margin-bottom:5px!important}
+  body.print-summary .os-employee{height:44px!important}
+  body.print-summary .os-table th,
+  body.print-summary .os-table td{height:31px!important}
+  body.print-summary .os-signatures{
+    margin-top:7px!important;
+    gap:18px!important;
+  }
+  body.print-summary .os-sign-left,
+  body.print-summary .os-sign-right{
+    grid-template-rows:repeat(2,25px)!important;
+    gap:2px!important;
+  }
 }
