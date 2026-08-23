@@ -1,0 +1,58 @@
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><h1>On-Call Maintenance Assistant</h1><div class="sub">v0.5.0 · Maintenance Request NO. Cleanup · Standalone</div></div>
+    <div class="top-actions"><button class="secondary" id="langToggle">ES</button><button class="secondary hidden" id="installAppBtn">⬇️ Install App</button><button class="secondary" data-go="settings">⚙️ <span data-i18n="settings">Settings</span></button></div>
+  </div>
+
+  <section id="dashboard" class="screen active">
+    <div class="card">
+      <div class="row between wrap gap"><div><b data-i18n="setup">Current Setup</b><div class="muted tiny" data-i18n="setupHint">One technician, one pay period, one reconciliation workspace.</div></div></div>
+      <div class="setup-grid top-space">
+        <div class="setup-box"><small data-i18n="worker">Technician</small><b id="dashWorker">Not configured</b><div class="tiny muted" id="dashWorkerId"></div></div>
+        <div class="setup-box"><small data-i18n="reportDate">Report Date</small><b id="dashReportDate"></b></div>
+        <div class="setup-box"><small data-i18n="payPeriod">Pay Period</small><b id="dashPeriod"></b></div>
+      </div>
+    </div>
+    <div class="dashboard-grid">
+      <button class="big-card" data-go="payroll"><span class="icon">🕒</span><span class="title" data-i18n="payrollCard">Payroll Time Card</span><span class="desc" data-i18n="payrollDesc">Import Humanity, correct the TIME CARD, and assign reportable events.</span></button>
+      <button class="big-card" data-go="emergency"><span class="icon">🚨</span><span class="title" data-i18n="newEmergency">New Emergency</span><span class="desc" data-i18n="newEmergencyDesc">Optional field entry for the technician who wants to document a call immediately.</span></button>
+      <button class="big-card" data-go="summary"><span class="icon">📋</span><span class="title" data-i18n="onCallSummary">On-Call Time Summary</span><span class="desc" data-i18n="summaryDesc">Automatic summary of all reportable events in the pay period.</span></button>
+      <button class="big-card" data-go="requests"><span class="icon">🧾</span><span class="title" data-i18n="maintenanceRequests">Maintenance Requests</span><span class="desc" data-i18n="requestsDesc">Edit, delete and preview the report created for every event.</span></button>
+      <button class="big-card" data-go="knowledge"><span class="icon">🧠</span><span class="title" data-i18n="knowledgeBase">Emergency Knowledge Base</span><span class="desc" data-i18n="knowledgeDesc">Known problems and reusable solutions.</span></button>
+      <button class="big-card" data-go="vendors"><span class="icon">🏢</span><span class="title" data-i18n="vendorsTitle">Contractors & Vendors</span><span class="desc" data-i18n="vendorsDesc">Reference contacts used in Maintenance Requests.</span></button>
+    </div>
+  </section>
+
+  <section id="payroll" class="screen">
+    <div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="payrollCard">Payroll Time Card</h2><p data-i18n="payrollSub">Humanity is the starting point. The working TIME CARD is what you reconcile and correct for the manager.</p></div></div>
+    <div class="card periodbar"><button class="secondary" id="prevPeriod">←</button><div class="period-center"><b id="periodLabel"></b><small data-i18n="periodRule">14 days · Sunday through Saturday</small></div><button class="secondary" id="nextPeriod">→</button></div>
+    <div class="card">
+      <div class="three-actions">
+        <label class="action-tile"><input type="file" id="humanityPdf" accept="application/pdf" hidden><span>📄</span><b data-i18n="uploadHumanity">Upload Humanity PDF</b><small data-i18n="uploadHint">Loads the official Humanity reference without deleting existing field events.</small></label>
+        <button class="action-tile" id="manualHoursBtn"><span>✍️</span><b data-i18n="enterManual">Enter Manually</b><small data-i18n="manualHint">Create the 14 days and type the printed Humanity record.</small></button>
+        <button class="action-tile" id="reviewHoursBtn"><span>🔎</span><b data-i18n="reviewHours">Review / Edit Hours</b><small data-i18n="reviewHint">Corrections and manager notes print in red.</small></button>
+      </div>
+      <div id="pdfStatus" class="notice muted" data-i18n="noPdf">No Humanity PDF selected.</div>
+    </div>
+    <div class="card" id="hoursEditor">
+      <div class="row between wrap gap"><div><h3 id="hoursModeTitle">Review / Edit Hours</h3><div class="muted tiny" id="hoursModeHelp"></div></div><div class="row gap wrap"><button class="secondary" id="fill14Btn" data-i18n="create14">Create 14 Days</button><button class="primary" id="saveHoursBtn" data-i18n="saveHours">Save Hours</button><button class="secondary" id="resetImportedBtn" data-i18n="resetImported">Reset to Imported PDF</button><button class="dangerbtn" id="clearHoursBtn" data-i18n="clearPayroll">Clear Payroll Data</button></div></div>
+      <div class="quick-note top-space"><b data-i18n="reportableRule">Automatic reportable-time guide:</b> <span data-i18n="ruleText">weekends = reportable; weekdays = work before 8:00 AM plus work after 8 regular worked hours beginning at 8:00 AM. The technician still decides what event actually occurred.</span></div>
+      <div id="daysEditor" class="days-editor"></div>
+      <div class="row gap wrap top-space"><button class="primary" id="previewPayrollBtn" data-i18n="previewPayroll">Preview TIME CARD</button></div>
+    </div>
+    <div id="payrollPreview" class="card hidden"></div>
+  </section>
+
+  <section id="emergency" class="screen">
+    <div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="newEmergency">New Emergency</h2><p data-i18n="emergencySub">Optional field entry. It will appear on the matching Payroll day for reconciliation; importing Humanity never deletes it.</p></div></div>
+    <form class="card form-grid" id="fieldEmergencyForm">
+      <div class="span2 clean-help">Fill only what you know. These fields feed the company Maintenance Request; the technician can write in Spanish, English, or mixed language.</div>
+      <label><span data-i18n="serviceDate">Emergency / Service Date</span><input type="date" name="date" required></label>
+      <label><span data-i18n="timeIn">Time In</span><input type="time" name="in" required></label>
+      <label><span data-i18n="timeOut">Time Out</span><input type="time" name="out"></label>
+      <label class="span2"><span data-i18n="location">Location</span><div class="row gap"><input type="text" id="fieldLocationSearch" placeholder="61C / 3535 / 3535-61C"><button type="button" class="secondary" id="fieldManualLocationBtn" data-i18n="manualLocation">Manual Location</button></div><div id="fieldLocationResults" class="autocomplete hidden"></div><div id="fieldSelectedLocation" class="selected-location hidden"></div><input type="hidden" name="locationCode"><input type="hidden" name="fullAddress"></label>
+      <label class="span2 hidden" id="fieldManualLocationWrap"><span data-i18n="manualAddress">Manual Location / Address</span><input type="text" name="manualLocation" placeholder="POOL / boiler room / laundry room / office / common area..."></label>
+      <label class="span2"><span data-i18n="reportTitle">Title / Work Request</span><div class="row gap"><select name="problem" id="fieldProblemSelect"></select><button type="button" class="secondary" id="fieldNewProblemBtn">+ New</button></div></label>
+      <label class="span2"><span data-i18n="whatFound">What Did You Find?</span><textarea name="finding" rows="2" placeholder="Example: The toilet was not flushing properly."></textarea></label>
+      <label class="span2"><span data-i18n="whatDid">What Did You Do?</span><textarea name="solution" rows="3" placeholder="Example: Replaced the cartridge and tested the flush several times."></textarea></label>
+      <label class="span2"><span data-i18n="specialInstructions">Special Instructions (optional)</spa

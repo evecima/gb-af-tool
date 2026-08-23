@@ -1,0 +1,56 @@
+n><textarea name="specialInstructions" rows="2" placeholder="Example: Advised the resident I would return the next morning to recheck operation."></textarea></label>
+      <label class="span2"><span data-i18n="remarksResult">Remarks / Result</span><textarea name="remarks" rows="2" placeholder="Example: Toilet working properly."></textarea></label>
+      <label><span data-i18n="materialPart">Material / Part (optional)</span><input name="material"></label><label><span data-i18n="quantity">Quantity</span><input type="number" min="0" step="1" name="quantity"></label>
+      <label class="span2 inline-check"><input type="checkbox" id="fieldUsedVendor"><span data-i18n="usedVendor">Used Contractor / Vendor?</span></label>
+      <div class="conditional-panel hidden" id="fieldVendorPanel">
+        <div class="form-grid"><label><span data-i18n="contractorVendor">Contractor / Vendor</span><select id="fieldVendorSelect"></select></label><label class="hidden" id="fieldVendorManualWrap"><span data-i18n="enterVendorManually">Enter Manually</span><input id="fieldVendorManual"></label><label class="span2"><span data-i18n="whatVendorDid">What did the contractor/vendor do?</span><textarea name="vendorWork" rows="2"></textarea></label></div>
+      </div>
+      <label><span data-i18n="jobStatus">Job Status</span><select name="status"><option>Job Complete</option><option>Not Complete</option></select></label>
+      <details class="form-details"><summary data-i18n="additionalDetails">Additional form details (optional)</summary><div class="form-grid top-space"><label><span data-i18n="timeReceived">Time Received</span><input type="time" name="timeReceived"></label><label><span data-i18n="occupant">Occupant</span><input type="text" name="occupant"></label><label><span data-i18n="phone">Phone</span><input type="tel" name="phone"></label></div></details>
+      <div class="span2 row gap wrap"><button class="primary" type="submit" data-i18n="saveEmergency">Save Emergency</button><span class="muted tiny" data-i18n="fieldSaveHint">It will appear on the matching Payroll day for reconciliation.</span></div>
+    </form>
+  </section>
+
+  <section id="summary" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="onCallSummary">On-Call Time Summary</h2><p data-i18n="summarySub">Read-only summary generated from saved reportable events.</p></div></div><div class="card"><div id="summaryPeriod" class="muted"></div><div class="table-wrap top-space"><table><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Notes</th><th>Apt # or TH</th></tr></thead><tbody id="summaryRows"></tbody></table></div><button class="primary top-space" id="previewSummaryBtn" data-i18n="previewSummary">Preview Summary</button></div><div id="summaryPreview" class="card hidden"></div></section>
+
+  <section id="requests" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="maintenanceRequests">Maintenance Requests</h2><p data-i18n="requestsSub">This is the master place to edit or delete events. The On-Call Summary updates automatically.</p></div></div>
+<div class="card">
+  <div class="row between wrap gap">
+    <div><b>Maintenance Request Folios</b><div class="muted tiny">Enter the first folio number from your physical pad. The app assigns consecutive folios to this pay period in chronological order.</div></div>
+    <div class="row gap wrap">
+      <label class="tiny"><span>Starting Folio</span><input id="folioStartInput" type="number" min="1" step="1" inputmode="numeric" placeholder="450" style="width:115px;margin-left:6px"></label>
+      <button class="secondary" id="assignFoliosBtn">Assign / Reassign Folios</button>
+    </div>
+  </div>
+  <div id="folioStatus" class="muted tiny top-space"></div>
+</div>
+<div class="card"><div id="requestList" class="list"></div></div><div id="requestPreview" class="card hidden"></div></section>
+
+  <section id="knowledge" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="knowledgeBase">Emergency Knowledge Base</h2><p class="muted">Historical field cases plus solutions learned locally from this technician. Test/exam questions are excluded.</p></div></div>
+    <div class="card"><div class="row between wrap gap"><div><b id="knowledgeStats">Knowledge Base</b><div class="muted tiny">Saving a real emergency with a problem and finding/solution teaches this device automatically. Nothing is shared with other technicians in Phase 1.</div></div><button class="secondary" id="addKnowledgeBtn">+ Add Knowledge</button></div><input id="knowledgeSearch" class="top-space" placeholder="Search problem / finding / solution"><div id="knowledgeList" class="list top-space"></div></div></section>
+
+  <section id="vendors" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="vendorsTitle">Contractors & Vendors</h2><p class="muted">Local contractor/vendor reference list for this technician.</p></div></div><div class="card"><input id="vendorSearch" placeholder="Search company / specialty / contact"><div id="vendorList" class="list top-space"></div></div></section>
+
+  <section id="settings" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="settings">Settings</h2><p class="muted" data-i18n="settingsSub">Local v0.5 workspace. v0.4 backups can be imported; local technician knowledge stays on this device.</p></div></div>
+    <div class="card settings-grid">
+      <form id="settingsForm" class="form-grid span2">
+        <label><span data-i18n="workerName">Technician Name</span><input name="workerName" placeholder="Technician name"></label>
+        <label><span>Technician ID</span><input name="workerId" readonly></label>
+        <label><span>Community</span><input name="community" placeholder="Apartment Community"></label>
+        <label><span>Standard Job Title</span><input name="jobTitle" value="Maintenance Technician"></label>
+        <label><span data-i18n="reportDate">Report Date</span><input type="date" name="reportDate"></label>
+        <label><span data-i18n="language">Language</span><select name="language"><option value="en">English</option><option value="es">Español</option></select></label><details class="form-details span2"><summary>Property / Printed Form Setup</summary><div class="form-grid top-space">
+<label><span>Street Name for Apartment Addresses</span><input name="streetName" placeholder="Example Blvd / Main St"></label>
+<label><span>City, State ZIP</span><input name="cityStateZip" placeholder="City, ST ZIP"></label>
+<label><span>Maintenance Request Address Line 1</span><input name="propertyAddress1" placeholder="Office / community address"></label>
+<label><span>Maintenance Request Address Line 2</span><input name="propertyAddress2" placeholder="City, State ZIP"></label>
+<label><span>Maintenance Request Phone</span><input name="propertyPhone" placeholder="(000) 000-0000"></label>
+</div></details>
+        <div class="span2 row gap wrap"><button class="primary" type="submit" data-i18n="saveSettings">Save Settings</button><button class="secondary" type="button" id="useTodayBtn" data-i18n="useToday">Use Today</button></div>
+      </form>
+    </div>
+    <details class="card form-details"><summary>Advanced / Local Backup</summary><div class="top-space"><p class="muted tiny">Local backup and optional technician/property setup. Cloud sync remains Phase 2.</p><div class="row gap wrap"><button class="secondary" id="exportDataBtn">Export JSON Backup</button><label class="secondary"><input type="file" id="importDataFile" accept="application/json" hidden>Import JSON Backup</label><label class="secondary"><input type="file" id="importSetupFile" accept="application/json" hidden>Import Local Setup Package</label></div></div></details>
+    <div class="hidden"><button id="resetAppBtn">Reset Local Data</button></div>
+  </section>
+
+  <

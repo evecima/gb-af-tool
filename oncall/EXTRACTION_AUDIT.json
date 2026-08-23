@@ -1,0 +1,7 @@
+{
+  "version": "0.5.0",
+  "historical_cases": 38,
+  "source_chats": 5,
+  "excluded": "Level I/II study/test Q&A and non-field discussion",
+  "principle": "Only field cases supported by the supplied shared chats; no apartment identifiers included in seed."
+}

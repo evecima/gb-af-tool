@@ -1,0 +1,40 @@
+div class="footer-note">Payroll-centered workflow v0.5.0 · PWA / local learning. Payroll is the only TIME CARD editor; events feed Maintenance Requests and the On-Call Summary automatically.</div>
+</div>
+
+<!-- Event Builder -->
+<div class="modal-backdrop" id="eventBuilderModal"><div class="modal"><div class="modal-head"><div><h3 data-i18n="eventBuilder">Manage / Split Reportable Events</h3><div class="muted tiny" id="eventBuilderContext"></div></div><button class="x" data-close="eventBuilderModal">×</button></div><div id="suggestedSegments" class="top-space"></div><div id="existingEventSuggestions" class="top-space"></div><div id="eventRows" class="top-space"></div><div class="row between wrap gap top-space"><button class="secondary" id="addEventRowBtn">+ Add Event</button><span class="muted tiny" data-i18n="payrollOnlyEditor">TIME CARD hours are edited only on the Payroll page.</span></div><div class="modal-error" id="eventBuilderError"></div><div class="row end gap top-space"><button class="secondary" data-close="eventBuilderModal" data-i18n="cancel">Cancel</button><button class="primary" id="saveEventRowsBtn" data-i18n="saveEvents">Save Events</button></div></div></div>
+
+<!-- Full Event Editor -->
+<!-- Full Event Editor -->
+<div class="modal-backdrop" id="eventEditorModal"><div class="modal"><div class="modal-head"><div><h3 id="eventEditorTitle">Maintenance Request</h3><div class="muted tiny" id="eventEditorMeta"></div></div><button class="x" data-close="eventEditorModal">×</button></div><form id="eventEditorForm" class="form-grid top-space">
+<label><span data-i18n="eventType">Event Type</span><select name="type" id="editEventType"></select></label><label><span data-i18n="serviceDate">Emergency / Service Date</span><input type="date" name="date" required></label><label><span data-i18n="timeIn">Time In</span><input type="time" name="in"></label><label><span data-i18n="timeOut">Time Out</span><input type="time" name="out"></label>
+<label class="span2"><span data-i18n="locationShort">Location / Apt # / POOL</span><input name="locationCode" id="editLocationSearch" autocomplete="off" placeholder="61C / 3535 / 3535-61C / POOL"><div id="editLocationResults" class="autocomplete hidden"></div><div id="editSelectedLocation" class="selected-location hidden"></div></label>
+<div class="pool-template-note hidden" id="poolTemplateNote"><div class="row between wrap gap"><span data-i18n="poolTemplateHint">Pool events use the standard company-style wording as a proposal. Keep it, add to it, or change it.</span><button type="button" class="secondary" id="restorePoolTemplateBtn" data-i18n="restorePoolText">Restore Standard Text</button></div></div>
+<label class="span2"><span data-i18n="reportTitle">Title / Work Request</span><input name="problem" placeholder="Toilet Not Flushing / Pool Closing / Snow Removal..."></label>
+<label class="span2"><span data-i18n="whatFound">What Did You Find?</span><textarea name="finding" rows="2" placeholder="Example: The toilet was not flushing properly."></textarea></label>
+<label class="span2"><span data-i18n="whatDid">What Did You Do?</span><textarea name="solution" rows="3" placeholder="Example: Replaced the cartridge and tested the flush several times."></textarea></label>
+<label class="span2"><span data-i18n="specialInstructions">Special Instructions (optional)</span><textarea name="specialInstructions" rows="2"></textarea></label>
+<label class="span2"><span data-i18n="remarksResult">Remarks / Result</span><textarea name="remarks" rows="2" placeholder="Example: Toilet working properly."></textarea></label>
+<label><span data-i18n="materialPart">Material / Part (optional)</span><input name="material"></label><label><span data-i18n="quantity">Quantity</span><input type="number" min="0" step="1" name="quantity"></label>
+<label class="span2 inline-check"><input type="checkbox" id="editUsedVendor"><span data-i18n="usedVendor">Used Contractor / Vendor?</span></label>
+<div class="conditional-panel hidden" id="editVendorPanel"><div class="form-grid"><label><span data-i18n="contractorVendor">Contractor / Vendor</span><select id="editVendorSelect"></select></label><label class="hidden" id="editVendorManualWrap"><span data-i18n="enterVendorManually">Enter Manually</span><input id="editVendorManual"></label><label class="span2"><span data-i18n="whatVendorDid">What did the contractor/vendor do?</span><textarea name="vendorWork" rows="2"></textarea></label></div></div>
+<label><span data-i18n="jobStatus">Job Status</span><select name="status"><option>Job Complete</option><option>Not Complete</option></select></label><label><span data-i18n="worker">Technician</span><input name="worker"></label>
+<details class="form-details"><summary data-i18n="additionalDetails">Additional form details (optional)</summary><div class="form-grid top-space"><label><span>Date Received</span><input type="date" name="dateReceived"></label><label><span data-i18n="timeReceived">Time Received</span><input type="time" name="timeReceived"></label><label><span data-i18n="occupant">Occupant</span><input name="occupant"></label><label><span data-i18n="phone">Phone</span><input name="phone"></label><label class="span2"><span data-i18n="fullAddress">Full Address / Manual Location</span><input name="fullAddress"></label></div></details>
+<div class="span2 quick-note" data-i18n="eventTimeNote">Changing an event's service time does not change the TIME CARD. Payroll corrections are made only on the Payroll page.</div><div class="span2 row end gap"><button type="button" class="secondary" data-close="eventEditorModal" data-i18n="cancel">Cancel</button><button class="primary" type="submit" data-i18n="saveChanges">Save Changes</button></div></form></div></div>
+
+<!-- New Problem -->
+<div class="modal-backdrop" id="newProblemModal"><div class="modal" style="max-width:520px"><div class="modal-head"><div><h3>New Emergency / Problem</h3><div class="muted tiny">Add a problem to the Emergency catalog.</div></div><button class="x" data-close="newProblemModal">×</button></div><label class="top-space" style="display:block;font-size:12px;font-weight:700">Problem Name<input id="newProblemName" style="width:100%;margin-top:5px;border:1px solid #cbd5dc;border-radius:9px;padding:9px"></label><div class="modal-error" id="newProblemError"></div><div class="row end gap top-space"><button class="secondary" data-close="newProblemModal">Cancel</button><button class="primary" id="newProblemSave">Add Problem</button></div></div></div>
+
+
+<!-- Local Knowledge Editor -->
+<div class="modal-backdrop" id="knowledgeModal"><div class="modal" style="max-width:700px"><div class="modal-head"><div><h3>Add Local Knowledge</h3><div class="muted tiny">A reusable field case stored only on this device.</div></div><button class="x" data-close="knowledgeModal">×</button></div><form id="knowledgeForm" class="form-grid top-space">
+<label class="span2"><span>Problem</span><input name="problem" required></label>
+<label class="span2"><span>Finding / Diagnosis</span><textarea name="finding" rows="2"></textarea></label>
+<label class="span2"><span>Work Performed / Solution</span><textarea name="solution" rows="3"></textarea></label>
+<label class="span2"><span>Result</span><textarea name="result" rows="2"></textarea></label>
+<label><span>Material / Part</span><input name="material"></label><label><span>Vendor (optional)</span><input name="vendor"></label>
+<div class="span2 row end gap"><button type="button" class="secondary" data-close="knowledgeModal">Cancel</button><button class="primary" type="submit">Save to My Knowledge Base</button></div>
+</form></div></div>
+
+<!-- Generic confirm -->
+<div class="modal-backdrop" id="confirmModal"><div class="modal" style="max-width:480px"><div class="modal-head"><h3 id="confirmTitle">Confirm</h3><button class="x" id="confirmX">×</button></div><p id="confirmMessage"></p><div class="row end gap"><button class="secondary" id="confirmCancel">Cancel</button><button class="primary" id="confirmOk">Confir
