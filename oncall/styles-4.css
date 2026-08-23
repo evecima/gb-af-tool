@@ -1,4 +1,40 @@
-/* v0.5.3 — strict print isolation + payroll fit/manager-note overrides */
+/* v0.5.4 — strict print isolation + compact Payroll columns + manager-note space */
+
+/* Keep the on-screen preview aligned with the printed TIME CARD proportions. */
+.timecard-paper .tc-main-table .tc-day-head{width:11.2%}
+.timecard-paper .tc-main-table .tc-date-head{width:9.4%}
+.timecard-paper .tc-main-table .tc-job-head{width:6.0%}
+.timecard-paper .tc-main-table .tc-time-head{width:7.9%}
+.timecard-paper .tc-main-table .tc-hours-head{width:8.7%}
+.timecard-paper .tc-main-table .tc-pto-head{width:7.6%}
+.timecard-paper .tc-main-table .tc-code-head{width:7.2%}
+.timecard-paper .tc-main-table .tc-total-head{width:8.4%}
+.timecard-paper .tc-day-wrap{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  column-gap:3px;
+}
+.timecard-paper .tc-day-name{
+  min-width:24px;
+  white-space:nowrap;
+  text-align:left;
+}
+.timecard-paper .tc-day-note{
+  min-width:0;
+  max-width:100%;
+  color:#c1121f;
+  font-size:6.1px;
+  line-height:1;
+  font-style:italic;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  text-align:right;
+}
+
 @media print{
   html,body{background:#fff!important}
   body.print-payroll,body.print-summary,body.print-request{
@@ -34,45 +70,44 @@
   body.print-summary #summaryPreview>:not(.summary-paper),
   body.print-request #requestPreview>:not(.maintenance-request-paper){display:none!important}
 
+  /* Payroll gets a slight automatic reduction so the official form has breathing room. */
   body.print-payroll .timecard-paper{
     display:block!important;
     width:100%!important;
     max-width:none!important;
     min-height:auto!important;
     margin:0 auto!important;
+    zoom:.96;
     break-inside:avoid!important;
     page-break-inside:avoid!important;
     page-break-after:auto!important;
   }
 
-  /* Give manager notes a natural home immediately to the left of DATE.
-     Job Code is blank in our workflow, so it donates a little width. */
-  body.print-payroll .tc-main-table .tc-day-head{width:9.4%!important}
-  body.print-payroll .tc-main-table .tc-date-head{width:9.4%!important}
-  body.print-payroll .tc-main-table .tc-job-head{width:7.7%!important}
+  /* The DAY cell owns the manager note. It no longer pushes DATE or the clock columns. */
   body.print-payroll .tc-day-wrap{
     width:100%!important;
-    display:flex!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr)!important;
     align-items:center!important;
-    justify-content:space-between!important;
-    gap:1px!important;
+    column-gap:3px!important;
   }
   body.print-payroll .tc-day-name{
-    flex:0 0 auto!important;
-    text-align:left!important;
+    min-width:24px!important;
     white-space:nowrap!important;
+    text-align:left!important;
   }
   body.print-payroll .tc-day-note{
-    flex:0 0 auto!important;
-    margin-left:auto!important;
+    min-width:0!important;
+    max-width:100%!important;
     color:#c1121f!important;
-    font-size:5.8px!important;
+    font-size:6px!important;
     line-height:1!important;
     font-style:italic!important;
     font-weight:900!important;
     white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
     text-align:right!important;
-    overflow:visible!important;
   }
 
   /* Keep the lower approvals/analysis section inside the printable width. */
