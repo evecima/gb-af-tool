@@ -1,4 +1,4 @@
-const CACHE='oncall-maintenance-v0-5-5-notes-gutter';
+const CACHE='oncall-maintenance-v0-5-6-alignment';
 const CORE=["./","./index.html","./styles-1.css","./styles-2.css","./styles-3.css","./styles-4.css","./styles-5.css","./ui-1.html","./ui-2.html","./ui-3.html","./ui-4.html","./seeds-1.js","./seeds-2.js","./seeds-3.js","./seeds-4.js","./app-01.js","./app-02.js","./app-03.js","./app-04.js","./app-05.js","./app-06.js","./app-07.js","./app-08.js","./app-09.js","./app-10.js","../apartments.js","./manifest.webmanifest","./icons/icon.svg"];
 const PDFJS=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);await c.addAll(CORE);for(const u of PDFJS){try{const r=await fetch(u,{mode:'cors'});if(r.ok)await c.put(u,r.clone())}catch(e){}}})());self.skipWaiting()});
