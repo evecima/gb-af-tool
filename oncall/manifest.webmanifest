@@ -1,0 +1,18 @@
+{
+  "name": "On-Call Maintenance Assistant",
+  "short_name": "On-Call",
+  "description": "Local-first maintenance on-call time card, requests and knowledge base.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#1261a0",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
