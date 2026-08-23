@@ -1,0 +1,48 @@
+/* v0.5.5 — borderless Payroll Notes gutter */
+.timecard-paper .tc-main-table-notes{table-layout:fixed}
+.timecard-paper .tc-main-table-notes .tc-notes-head,
+.timecard-paper .tc-main-table-notes .tc-note-cell{
+  border:0!important;
+  background:transparent!important;
+}
+.timecard-paper .tc-main-table-notes .tc-notes-head{
+  width:8%!important;
+  color:rgba(0,0,0,.18)!important;
+  font-size:5.6px!important;
+  font-weight:500!important;
+  text-align:right!important;
+  padding:0 5px 2px 0!important;
+  vertical-align:bottom!important;
+}
+.timecard-paper .tc-main-table-notes .tc-note-cell{
+  width:8%!important;
+  color:#c1121f!important;
+  font-size:6px!important;
+  line-height:1!important;
+  font-style:italic!important;
+  font-weight:900!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  padding:1px 5px 1px 0!important;
+}
+.timecard-paper .tc-main-table-notes .week-row .tc-note-cell{background:#fff!important;color:#c1121f!important}
+.timecard-paper .tc-main-table-notes .tc-day-head{width:6.5%!important}
+.timecard-paper .tc-main-table-notes .tc-date-head{width:10%!important}
+.timecard-paper .tc-main-table-notes .tc-job-head{width:6%!important}
+.timecard-paper .tc-main-table-notes .tc-time-head{width:8%!important}
+.timecard-paper .tc-main-table-notes .tc-hours-head{width:10%!important}
+.timecard-paper .tc-main-table-notes .tc-pto-head{width:8%!important}
+.timecard-paper .tc-main-table-notes .tc-code-head{width:8%!important}
+.timecard-paper .tc-main-table-notes .tc-total-head{width:11.5%!important}
+.timecard-paper .tc-main-table-notes .tc-day-cell{padding-left:3px!important;text-align:left!important}
+.timecard-paper .tc-main-table-notes .tc-day-name{min-width:0!important}
+
+@media print{
+  body.print-payroll .timecard-paper{zoom:.96}
+  body.print-payroll .tc-main-table-notes .tc-notes-head,
+  body.print-payroll .tc-main-table-notes .tc-note-cell{border:0!important;background:transparent!important}
+  body.print-payroll .tc-main-table-notes .week-row .tc-note-cell{background:#fff!important}
+  body.print-payroll .tc-main-table-notes .tc-note-cell{font-size:5.8px!important}
+}
