@@ -1,4 +1,4 @@
-/* v0.5.5 — borderless Payroll Notes gutter */
+/* v0.5.6 — borderless Payroll Notes margin + full form alignment */
 .timecard-paper .tc-main-table-notes{table-layout:fixed}
 .timecard-paper .tc-main-table-notes .tc-notes-head,
 .timecard-paper .tc-main-table-notes .tc-note-cell{
@@ -7,8 +7,8 @@
 }
 .timecard-paper .tc-main-table-notes .tc-notes-head{
   width:8%!important;
-  color:rgba(0,0,0,.18)!important;
-  font-size:5.6px!important;
+  color:rgba(0,0,0,.14)!important;
+  font-size:5.4px!important;
   font-weight:500!important;
   text-align:right!important;
   padding:0 5px 2px 0!important;
@@ -39,10 +39,67 @@
 .timecard-paper .tc-main-table-notes .tc-day-cell{padding-left:3px!important;text-align:left!important}
 .timecard-paper .tc-main-table-notes .tc-day-name{min-width:0!important}
 
+/* The 8% Notes area is a true annotation margin: the official form begins after it. */
+.timecard-paper .tc-brandline,
+.timecard-paper .tc-header-box,
+.timecard-paper .tc-bottom{
+  margin-left:8%!important;
+  width:92%!important;
+}
+.timecard-paper .tc-brandline{padding-left:0!important}
+
+/* Keep PAY PERIOD / THROUGH faithful, but give THROUGH a little more separation. */
+.timecard-paper .tc-period-row{
+  grid-template-columns:max-content 142px max-content 142px!important;
+  column-gap:8px!important;
+  justify-content:start!important;
+}
+.timecard-paper .tc-period-row b:nth-of-type(2){margin-left:20px!important}
+
+/* Bottom section follows the same left margin as the header/table. */
+.timecard-paper .tc-bottom{
+  grid-template-columns:minmax(0,44%) minmax(0,1fr)!important;
+  gap:16px!important;
+}
+.timecard-paper .tc-approval-row{
+  grid-template-columns:62px minmax(0,1fr) 28px 64px!important;
+}
+
+/* Move the PAID HOURS ANALYSIS wording right while keeping TOTALS at the far right. */
+.timecard-paper .tc-analysis{min-width:0!important}
+.timecard-paper .tc-analysis-head,
+.timecard-paper .tc-analysis-row{
+  grid-template-columns:minmax(0,1fr) 62px!important;
+  gap:5px!important;
+}
+.timecard-paper .tc-analysis-head .tc-bottom-title{padding-left:34px!important}
+.timecard-paper .tc-analysis-label.main{padding-left:34px!important}
+.timecard-paper .tc-analysis-label:not(.main){padding-left:48px!important}
+.timecard-paper .tc-analysis-box{width:62px!important;max-width:100%!important}
+
 @media print{
   body.print-payroll .timecard-paper{zoom:.96}
   body.print-payroll .tc-main-table-notes .tc-notes-head,
   body.print-payroll .tc-main-table-notes .tc-note-cell{border:0!important;background:transparent!important}
   body.print-payroll .tc-main-table-notes .week-row .tc-note-cell{background:#fff!important}
   body.print-payroll .tc-main-table-notes .tc-note-cell{font-size:5.8px!important}
+
+  body.print-payroll .tc-brandline,
+  body.print-payroll .tc-header-box,
+  body.print-payroll .tc-bottom{
+    margin-left:8%!important;
+    width:92%!important;
+  }
+  body.print-payroll .tc-bottom{
+    grid-template-columns:minmax(0,44%) minmax(0,1fr)!important;
+    gap:14px!important;
+  }
+  body.print-payroll .tc-period-row{
+    grid-template-columns:max-content 132px max-content 132px!important;
+    column-gap:7px!important;
+  }
+  body.print-payroll .tc-period-row b:nth-of-type(2){margin-left:18px!important}
+  body.print-payroll .tc-analysis-head .tc-bottom-title{padding-left:30px!important}
+  body.print-payroll .tc-analysis-label.main{padding-left:30px!important}
+  body.print-payroll .tc-analysis-label:not(.main){padding-left:43px!important}
 }
