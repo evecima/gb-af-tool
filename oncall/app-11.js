@@ -1,4 +1,4 @@
-/* v0.5.9 — iOS print pipeline: scaled preview + dedicated print page */
+/* v0.5.10 — iOS preview scaling + PDF print handoff */
 (function(){
   const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   if(!isIOS)return;
@@ -46,7 +46,9 @@
     const c=node.cloneNode(true);
     c.removeAttribute('style');
     c.querySelectorAll('[style]').forEach(el=>{
-      if(el.style.transform||el.style.transformOrigin){el.style.removeProperty('transform');el.style.removeProperty('transform-origin')}
+      el.style.removeProperty('transform');
+      el.style.removeProperty('transform-origin');
+      if(!el.getAttribute('style'))el.removeAttribute('style');
     });
     return c.outerHTML;
   }
@@ -67,15 +69,12 @@
       if(typeof toast==='function')toast('Open the preview before printing.');
       return;
     }
-    let html='';
-    if(kind==='summary')html=nodes.map(n=>`<div class="ios-summary-portrait-page">${cleanClone(n)}</div>`).join('');
-    else html=nodes.map(cleanClone).join('');
-    const job={kind,title,html,returnUrl:location.href,createdAt:Date.now()};
+    const job={kind,title,html:nodes.map(cleanClone).join(''),returnUrl:location.href,createdAt:Date.now()};
     try{
       sessionStorage.setItem('ocma_ios_print_job',JSON.stringify(job));
-      location.href='./print.html?v=0.5.9';
+      location.href='./print.html?v=0.5.10';
     }catch(err){
-      if(typeof toast==='function')toast('Could not open the iOS print view: '+err.message);
+      if(typeof toast==='function')toast('Could not open the iOS PDF view: '+err.message);
     }
   }
 
