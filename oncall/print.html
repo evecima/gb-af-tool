@@ -4,73 +4,174 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1261a0">
-<title>On-Call Print View</title>
-<link rel="stylesheet" href="./styles-1.css?v=0.5.9">
-<link rel="stylesheet" href="./styles-2.css?v=0.5.9">
-<link rel="stylesheet" href="./styles-3.css?v=0.5.9">
-<link rel="stylesheet" href="./styles-4.css?v=0.5.9">
-<link rel="stylesheet" href="./styles-5.css?v=0.5.9">
-<link rel="stylesheet" href="./styles-6.css?v=0.5.9">
-<style id="pageRule"></style>
+<title>On-Call PDF Print</title>
+<link rel="stylesheet" href="./styles-1.css?v=0.5.10">
+<link rel="stylesheet" href="./styles-2.css?v=0.5.10">
+<link rel="stylesheet" href="./styles-3.css?v=0.5.10">
+<link rel="stylesheet" href="./styles-4.css?v=0.5.10">
+<link rel="stylesheet" href="./styles-5.css?v=0.5.10">
+<link rel="stylesheet" href="./styles-6.css?v=0.5.10">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 </head>
-<body class="ios-print-page">
-<div class="ios-print-toolbar">
-  <div class="ios-print-title" id="printTitle">On-Call Print View</div>
-  <div class="ios-print-actions">
+<body class="ios-pdf-page">
+<div class="ios-pdf-toolbar">
+  <div class="ios-pdf-title" id="pdfTitle">On-Call PDF</div>
+  <div class="ios-pdf-actions">
     <button id="backBtn" type="button">Back</button>
-    <button id="printBtn" class="primary" type="button">Print</button>
+    <button id="shareBtn" class="primary" type="button" disabled>Preparing PDF…</button>
   </div>
 </div>
-<div class="ios-print-hint" id="printHint">Review the form, then tap Print. Printing starts only from your tap.</div>
-<div class="ios-print-viewport" id="printViewport"><div class="muted">Loading print view…</div></div>
+<div class="ios-pdf-status" id="pdfStatus">Building a fixed-size PDF for iOS. No browser auto-print is used.</div>
+<div class="ios-pdf-viewport" id="pdfViewport"><div class="muted">Loading document…</div></div>
+<div class="ios-pdf-render-root" id="pdfRenderRoot" aria-hidden="true"></div>
 <script>
-(function(){
-  let job=null;
+(async function(){
+  let job=null,pdfBlob=null,pdfFile=null,pdfUrl=null;
   try{job=JSON.parse(sessionStorage.getItem('ocma_ios_print_job')||'null')}catch(e){}
-  const viewport=document.getElementById('printViewport');
-  const title=document.getElementById('printTitle');
-  const hint=document.getElementById('printHint');
-  if(!job||!job.kind||!job.html){
-    viewport.innerHTML='<div style="padding:24px;text-align:center">No print job was found. Return to the app and open a preview first.</div>';
-    document.getElementById('printBtn').disabled=true;
-    return;
+
+  const viewport=document.getElementById('pdfViewport');
+  const renderRoot=document.getElementById('pdfRenderRoot');
+  const title=document.getElementById('pdfTitle');
+  const status=document.getElementById('pdfStatus');
+  const shareBtn=document.getElementById('shareBtn');
+  const backBtn=document.getElementById('backBtn');
+
+  function setError(message){
+    status.className='ios-pdf-status error';
+    status.textContent=message;
+    shareBtn.disabled=true;
+    shareBtn.textContent='PDF Error';
   }
-  document.body.classList.add('print-'+job.kind);
-  title.textContent=job.title||'On-Call Print View';
-  if(job.kind==='summary')hint.textContent='iOS fix: leave AirPrint Orientation on Portrait. The Summary is rotated automatically so the physical sheet prints as the approved landscape form.';
-  const pageRule=job.kind==='summary'
-    ?'@page{size:letter portrait;margin:.22in}'
-    :job.kind==='payroll'
-      ?'@page{size:letter portrait;margin:.28in}'
-      :'@page{size:letter portrait;margin:.25in}';
-  document.getElementById('pageRule').textContent=pageRule;
-  viewport.innerHTML='<div id="printDocument">'+job.html+'</div>';
+
+  function filename(){
+    const base=(job?.title||'On-Call Document').replace(/[^a-z0-9_-]+/gi,'_').replace(/^_+|_+$/g,'');
+    return (base||'OnCall_Document')+'.pdf';
+  }
+
+  function selectorForKind(kind){
+    if(kind==='payroll')return'.timecard-paper';
+    if(kind==='summary')return'.summary-paper';
+    if(kind==='request')return'.maintenance-request-paper';
+    return'';
+  }
 
   function wrapForScreen(el){
-    if(el.parentElement&&el.parentElement.classList.contains('ios-print-screen-stage'))return el.parentElement;
-    const stage=document.createElement('div');stage.className='ios-print-screen-stage';
-    el.parentNode.insertBefore(stage,el);stage.appendChild(el);return stage;
+    if(el.parentElement&&el.parentElement.classList.contains('ios-pdf-screen-stage'))return el.parentElement;
+    const stage=document.createElement('div');
+    stage.className='ios-pdf-screen-stage';
+    el.parentNode.insertBefore(stage,el);
+    stage.appendChild(el);
+    return stage;
   }
+
   function fitScreen(){
-    const targets=job.kind==='summary'
-      ?[...document.querySelectorAll('.ios-summary-portrait-page')]
-      :[...document.querySelectorAll(job.kind==='payroll'?'.timecard-paper':'.maintenance-request-paper')];
-    targets.forEach(el=>{
+    const sel=selectorForKind(job.kind);
+    [...viewport.querySelectorAll(sel)].forEach(el=>{
       const stage=wrapForScreen(el);
-      el.style.transform='none';el.style.transformOrigin='top left';
+      el.style.transform='none';
+      el.style.transformOrigin='top left';
       const w=el.offsetWidth||el.scrollWidth,h=el.offsetHeight||el.scrollHeight;
       const avail=Math.max(260,viewport.clientWidth-8),s=Math.min(1,avail/w);
-      el.style.transform=`scale(${s})`;stage.style.width=Math.ceil(w*s)+'px';stage.style.height=Math.ceil(h*s)+'px';
+      el.style.transform=`scale(${s})`;
+      stage.style.width=Math.ceil(w*s)+'px';
+      stage.style.height=Math.ceil(h*s)+'px';
     });
   }
-  requestAnimationFrame(()=>requestAnimationFrame(fitScreen));
+
+  async function buildPdf(){
+    if(!window.html2canvas||!window.jspdf?.jsPDF)throw new Error('PDF tools did not load. Check the internet connection and try again.');
+    const sel=selectorForKind(job.kind);
+    const targets=[...renderRoot.querySelectorAll(sel)];
+    if(!targets.length)throw new Error('No printable form was found.');
+
+    if(document.fonts?.ready)await document.fonts.ready;
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
+    const landscape=job.kind==='summary';
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:landscape?'landscape':'portrait',unit:'pt',format:'letter',compress:true});
+    const desiredWidth={payroll:7.94*72,summary:10.55*72,request:5.67*72}[job.kind];
+    const edgeMargin={payroll:18,summary:10,request:18}[job.kind];
+    const captureScale=Math.min(2.25,Math.max(2,window.devicePixelRatio||2));
+
+    for(let i=0;i<targets.length;i++){
+      if(i>0)pdf.addPage('letter',landscape?'landscape':'portrait');
+      const el=targets[i];
+      const canvas=await html2canvas(el,{
+        backgroundColor:'#ffffff',
+        scale:captureScale,
+        useCORS:true,
+        logging:false,
+        imageTimeout:7000,
+        scrollX:0,
+        scrollY:0,
+        windowWidth:Math.ceil(el.scrollWidth),
+        windowHeight:Math.ceil(el.scrollHeight)
+      });
+      const pageW=pdf.internal.pageSize.getWidth(),pageH=pdf.internal.pageSize.getHeight();
+      const ratio=canvas.height/canvas.width;
+      let drawW=Math.min(desiredWidth,pageW-edgeMargin*2),drawH=drawW*ratio;
+      if(drawH>pageH-edgeMargin*2){drawH=pageH-edgeMargin*2;drawW=drawH/ratio;}
+      const x=(pageW-drawW)/2,y=(pageH-drawH)/2;
+      const image=canvas.toDataURL('image/jpeg',0.96);
+      pdf.addImage(image,'JPEG',x,y,drawW,drawH,undefined,'FAST');
+      canvas.width=1;canvas.height=1;
+    }
+    return pdf.output('blob');
+  }
+
+  async function shareOrOpenPdf(){
+    if(!pdfBlob||!pdfFile)return;
+    try{
+      let canShareFiles=!!navigator.share;
+      if(canShareFiles&&navigator.canShare){
+        try{canShareFiles=navigator.canShare({files:[pdfFile]})}catch(e){canShareFiles=false}
+      }
+      if(canShareFiles){
+        await navigator.share({files:[pdfFile],title:job.title||'On-Call PDF'});
+        return;
+      }
+    }catch(err){
+      if(err&&err.name==='AbortError')return;
+    }
+    if(!pdfUrl)pdfUrl=URL.createObjectURL(pdfBlob);
+    const opened=window.open(pdfUrl,'_blank');
+    if(!opened)location.href=pdfUrl;
+  }
+
+  backBtn.addEventListener('click',function(){
+    if(history.length>1)history.back();
+    else location.href=job?.returnUrl||'./';
+  });
+
+  if(!job||!job.kind||!job.html||!selectorForKind(job.kind)){
+    viewport.innerHTML='<div style="padding:24px;text-align:center">No PDF job was found. Return to the app and open a preview first.</div>';
+    setError('No document is available to build.');
+    return;
+  }
+
+  document.body.classList.add('pdf-'+job.kind);
+  title.textContent=job.title||'On-Call PDF';
+  viewport.innerHTML='<div id="pdfScreenDocument">'+job.html+'</div>';
+  renderRoot.innerHTML='<div id="pdfRenderDocument">'+job.html+'</div>';
+  fitScreen();
   window.addEventListener('resize',fitScreen);
 
-  document.getElementById('printBtn').addEventListener('click',function(){window.print()});
-  document.getElementById('backBtn').addEventListener('click',function(){
-    if(history.length>1)history.back();
-    else location.href=job.returnUrl||'./';
-  });
+  try{
+    status.textContent='Preparing the fixed-size PDF…';
+    pdfBlob=await buildPdf();
+    pdfFile=new File([pdfBlob],filename(),{type:'application/pdf'});
+    shareBtn.disabled=false;
+    shareBtn.textContent='Share / Print';
+    status.className='ios-pdf-status ready';
+    status.textContent=job.kind==='summary'
+      ?'PDF ready: US Letter Landscape. Tap Share / Print, then choose Print in the iOS share sheet.'
+      :'PDF ready: US Letter Portrait. Tap Share / Print, then choose Print in the iOS share sheet.';
+    shareBtn.addEventListener('click',shareOrOpenPdf);
+  }catch(err){
+    setError('Could not build the PDF: '+(err?.message||String(err)));
+  }
 })();
 </script>
 </body>
