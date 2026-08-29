@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1261a0">
+<title>On-Call Update Bridge</title>
+<style>
+body{margin:0;background:#f3f6f8;color:#17212b;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;display:grid;place-items:center;min-height:100vh}.box{width:min(560px,calc(100% - 32px));background:#fff;border:1px solid #d9e1e7;border-radius:16px;padding:24px;box-shadow:0 8px 26px rgba(26,47,66,.08)}h1{font-size:22px;margin:0 0 10px}.muted{color:#667684;font-size:14px;line-height:1.45}.ok{margin-top:14px;font-weight:700;color:#0b7a66}.bad{margin-top:14px;font-weight:700;color:#b42318}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Updating On-Call Maintenance Assistant…</h1>
+<div class="muted">Removing only the old On-Call app cache and service worker. Your local technician data, pay periods, emergencies, folios, settings and Knowledge Base are not deleted.</div>
+<div id="status" class="ok">Preparing update…</div>
+</div>
+<script>
+(async()=>{
+  const status=document.getElementById('status');
+  try{
+    status.textContent='Removing old On-Call service worker…';
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      for(const reg of regs){
+        try{
+          const p=new URL(reg.scope).pathname;
+          if(p.includes('/gb-af-tool/oncall/')) await reg.unregister();
+        }catch(e){}
+      }
+    }
+    status.textContent='Clearing old On-Call application cache…';
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.filter(k=>k.startsWith('oncall-maintenance-')).map(k=>caches.delete(k)));
+    }
+    status.textContent='Opening v0.5.8…';
+    setTimeout(()=>location.replace('./?upgrade=0.5.8&t='+Date.now()),250);
+  }catch(err){
+    status.className='bad';
+    status.textContent='Update bridge failed: '+String(err);
+  }
+})();
+</script>
+</body>
+</html>
