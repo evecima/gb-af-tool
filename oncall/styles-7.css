@@ -1,7 +1,6 @@
-/* v0.5.12 — Summary signature spacing + iOS PDF typography fidelity */
+/* v0.5.13 — Summary signature spacing + iOS text autosizing lock */
 
-/* Summary base layout: give the signature labels breathing room above the signature rule.
-   Net height increase is only ~3px so the approved one-page landscape layout is preserved. */
+/* Summary base layout: keep the improved signature spacing from v0.5.12. */
 .summary-paper .os-signatures{
   margin-top:10px;
 }
@@ -30,17 +29,27 @@
   padding-bottom:1px;
 }
 
-/* iOS standalone PDF view can enlarge small text independently of the paper geometry.
-   Force the CSS-authored sizes to remain 1:1 with the approved in-app preview. */
-body.ios-pdf-page,
-body.ios-pdf-page #pdfViewport,
-body.ios-pdf-page #pdfRenderRoot,
-body.ios-pdf-page .timecard-paper,
-body.ios-pdf-page .summary-paper,
-body.ios-pdf-page .maintenance-request-paper,
-body.ios-pdf-page .timecard-paper *,
-body.ios-pdf-page .summary-paper *,
-body.ios-pdf-page .maintenance-request-paper *{
+/* Safari/iOS can inflate small text while leaving the paper geometry unchanged.
+   Lock text sizing from the document root so both the in-app preview and the
+   visible PDF handoff preserve the CSS-authored typography exactly. */
+html.ios-device,
+html.ios-device body,
+html.ios-device .timecard-paper,
+html.ios-device .summary-paper,
+html.ios-device .maintenance-request-paper,
+html.ios-device .timecard-paper *,
+html.ios-device .summary-paper *,
+html.ios-device .maintenance-request-paper *,
+html.ios-pdf-document,
+html.ios-pdf-document body,
+html.ios-pdf-document #pdfViewport,
+html.ios-pdf-document #pdfRenderRoot,
+html.ios-pdf-document .timecard-paper,
+html.ios-pdf-document .summary-paper,
+html.ios-pdf-document .maintenance-request-paper,
+html.ios-pdf-document .timecard-paper *,
+html.ios-pdf-document .summary-paper *,
+html.ios-pdf-document .maintenance-request-paper *{
   -webkit-text-size-adjust:100%!important;
   text-size-adjust:100%!important;
 }
