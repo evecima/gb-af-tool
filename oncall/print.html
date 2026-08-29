@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1261a0">
+<title>On-Call Print View</title>
+<link rel="stylesheet" href="./styles-1.css?v=0.5.9">
+<link rel="stylesheet" href="./styles-2.css?v=0.5.9">
+<link rel="stylesheet" href="./styles-3.css?v=0.5.9">
+<link rel="stylesheet" href="./styles-4.css?v=0.5.9">
+<link rel="stylesheet" href="./styles-5.css?v=0.5.9">
+<link rel="stylesheet" href="./styles-6.css?v=0.5.9">
+<style id="pageRule"></style>
+</head>
+<body class="ios-print-page">
+<div class="ios-print-toolbar">
+  <div class="ios-print-title" id="printTitle">On-Call Print View</div>
+  <div class="ios-print-actions">
+    <button id="backBtn" type="button">Back</button>
+    <button id="printBtn" class="primary" type="button">Print</button>
+  </div>
+</div>
+<div class="ios-print-hint" id="printHint">Review the form, then tap Print. Printing starts only from your tap.</div>
+<div class="ios-print-viewport" id="printViewport"><div class="muted">Loading print view…</div></div>
+<script>
+(function(){
+  let job=null;
+  try{job=JSON.parse(sessionStorage.getItem('ocma_ios_print_job')||'null')}catch(e){}
+  const viewport=document.getElementById('printViewport');
+  const title=document.getElementById('printTitle');
+  const hint=document.getElementById('printHint');
+  if(!job||!job.kind||!job.html){
+    viewport.innerHTML='<div style="padding:24px;text-align:center">No print job was found. Return to the app and open a preview first.</div>';
+    document.getElementById('printBtn').disabled=true;
+    return;
+  }
+  document.body.classList.add('print-'+job.kind);
+  title.textContent=job.title||'On-Call Print View';
+  if(job.kind==='summary')hint.textContent='iOS fix: leave AirPrint Orientation on Portrait. The Summary is rotated automatically so the physical sheet prints as the approved landscape form.';
+  const pageRule=job.kind==='summary'
+    ?'@page{size:letter portrait;margin:.22in}'
+    :job.kind==='payroll'
+      ?'@page{size:letter portrait;margin:.28in}'
+      :'@page{size:letter portrait;margin:.25in}';
+  document.getElementById('pageRule').textContent=pageRule;
+  viewport.innerHTML='<div id="printDocument">'+job.html+'</div>';
+
+  function wrapForScreen(el){
+    if(el.parentElement&&el.parentElement.classList.contains('ios-print-screen-stage'))return el.parentElement;
+    const stage=document.createElement('div');stage.className='ios-print-screen-stage';
+    el.parentNode.insertBefore(stage,el);stage.appendChild(el);return stage;
+  }
+  function fitScreen(){
+    const targets=job.kind==='summary'
+      ?[...document.querySelectorAll('.ios-summary-portrait-page')]
+      :[...document.querySelectorAll(job.kind==='payroll'?'.timecard-paper':'.maintenance-request-paper')];
+    targets.forEach(el=>{
+      const stage=wrapForScreen(el);
+      el.style.transform='none';el.style.transformOrigin='top left';
+      const w=el.offsetWidth||el.scrollWidth,h=el.offsetHeight||el.scrollHeight;
+      const avail=Math.max(260,viewport.clientWidth-8),s=Math.min(1,avail/w);
+      el.style.transform=`scale(${s})`;stage.style.width=Math.ceil(w*s)+'px';stage.style.height=Math.ceil(h*s)+'px';
+    });
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(fitScreen));
+  window.addEventListener('resize',fitScreen);
+
+  document.getElementById('printBtn').addEventListener('click',function(){window.print()});
+  document.getElementById('backBtn').addEventListener('click',function(){
+    if(history.length>1)history.back();
+    else location.href=job.returnUrl||'./';
+  });
+})();
+</script>
+</body>
+</html>
