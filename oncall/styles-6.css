@@ -1,0 +1,173 @@
+/* v0.5.9 — iOS preview scaling + dedicated print view */
+
+/* iOS previews keep the real paper geometry and only scale the visual copy. */
+html.ios-device .ios-paper-stage{
+  position:relative;
+  display:block;
+  overflow:visible;
+  margin:14px auto 18px;
+}
+html.ios-device .ios-paper-stage>.timecard-paper,
+html.ios-device .ios-paper-stage>.summary-paper,
+html.ios-device .ios-paper-stage>.maintenance-request-paper{
+  margin:0!important;
+  transform-origin:top left!important;
+}
+html.ios-device .ios-paper-stage>.timecard-paper{
+  box-sizing:border-box!important;
+  width:8.5in!important;
+  min-width:8.5in!important;
+  max-width:none!important;
+}
+html.ios-device .ios-paper-stage>.summary-paper{
+  box-sizing:border-box!important;
+  width:11in!important;
+  min-width:11in!important;
+  max-width:none!important;
+}
+html.ios-device .ios-paper-stage>.maintenance-request-paper{
+  box-sizing:border-box!important;
+  width:14.4cm!important;
+  min-width:14.4cm!important;
+  max-width:none!important;
+}
+
+/* Dedicated iOS print page — only the requested form exists here. */
+body.ios-print-page{
+  margin:0;
+  background:#eef2f5;
+  color:#17212b;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+.ios-print-toolbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  background:#fff;
+  border-bottom:1px solid #d7e0e6;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.ios-print-toolbar .ios-print-title{font-size:13px;font-weight:800;line-height:1.2}
+.ios-print-toolbar .ios-print-actions{display:flex;gap:8px;flex-shrink:0}
+.ios-print-toolbar button{
+  border:1px solid #b9c7d0;
+  border-radius:9px;
+  padding:9px 13px;
+  background:#fff;
+  color:#18313f;
+  font:700 14px system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+.ios-print-toolbar button.primary{background:#1261a0;color:#fff;border-color:#1261a0}
+.ios-print-hint{
+  padding:8px 12px 0;
+  text-align:center;
+  color:#667684;
+  font-size:12px;
+  line-height:1.35;
+}
+.ios-print-viewport{padding:10px 8px 24px;overflow:hidden}
+.ios-print-screen-stage{position:relative;display:block;margin:12px auto 18px;overflow:visible}
+.ios-print-screen-stage>.timecard-paper,
+.ios-print-screen-stage>.summary-paper,
+.ios-print-screen-stage>.maintenance-request-paper,
+.ios-print-screen-stage>.ios-summary-portrait-page{
+  margin:0!important;
+  transform-origin:top left!important;
+}
+
+@media print{
+  html,body{background:#fff!important}
+  body.ios-print-page{
+    margin:0!important;
+    padding:0!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  body.ios-print-page .ios-print-toolbar,
+  body.ios-print-page .ios-print-hint{display:none!important}
+  body.ios-print-page .ios-print-viewport{
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  body.ios-print-page .ios-print-screen-stage{
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+  body.ios-print-page .ios-print-screen-stage>*{
+    transform:none!important;
+  }
+
+  /* Payroll: Letter portrait, preserve the desktop-approved form and fit one page. */
+  body.ios-print-page.print-payroll .timecard-paper{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0 auto!important;
+    zoom:.94!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    page-break-after:auto!important;
+  }
+
+  /* Maintenance Request: one request per Letter portrait sheet. */
+  body.ios-print-page.print-request .maintenance-request-paper{
+    box-sizing:border-box!important;
+    width:5.67in!important;
+    min-width:5.67in!important;
+    min-height:8.50in!important;
+    max-height:9.75in!important;
+    margin:0 auto!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    page-break-after:auto!important;
+  }
+
+  /*
+    iOS AirPrint ignores landscape @page on some versions. The Summary is therefore
+    laid out as the approved 10.55 x 7.55 in landscape form and rotated inside a
+    Letter portrait print page. The physical result is landscape without asking the
+    user to change AirPrint Orientation manually.
+  */
+  body.ios-print-page.print-summary .ios-summary-portrait-page{
+    position:relative!important;
+    box-sizing:border-box!important;
+    width:7.55in!important;
+    height:10.55in!important;
+    margin:0 auto!important;
+    overflow:hidden!important;
+    break-after:page!important;
+    page-break-after:always!important;
+  }
+  body.ios-print-page.print-summary .ios-summary-portrait-page:last-child{
+    break-after:auto!important;
+    page-break-after:auto!important;
+  }
+  body.ios-print-page.print-summary .ios-summary-portrait-page .summary-paper{
+    position:absolute!important;
+    box-sizing:border-box!important;
+    left:0!important;
+    top:0!important;
+    width:10.55in!important;
+    min-width:10.55in!important;
+    height:7.55in!important;
+    min-height:7.55in!important;
+    max-height:7.55in!important;
+    margin:0!important;
+    transform-origin:top left!important;
+    transform:translateX(7.55in) rotate(90deg)!important;
+    break-after:auto!important;
+    page-break-after:auto!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+}
