@@ -1,4 +1,4 @@
-/* v0.5.11 — iOS preview scaling + local PDF print handoff */
+/* v0.5.12 — iOS preview scaling + local PDF print handoff */
 (function(){
   const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   if(!isIOS)return;
@@ -72,7 +72,7 @@
     const job={kind,title,html:nodes.map(cleanClone).join(''),returnUrl:location.href,createdAt:Date.now()};
     try{
       sessionStorage.setItem('ocma_ios_print_job',JSON.stringify(job));
-      location.href='./print.html?v=0.5.11';
+      location.href='./print.html?v=0.5.12';
     }catch(err){
       if(typeof toast==='function')toast('Could not open the iOS PDF view: '+err.message);
     }
