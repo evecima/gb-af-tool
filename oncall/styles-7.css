@@ -1,4 +1,4 @@
-/* v0.5.13 — Summary signature spacing + iOS text autosizing lock */
+/* v0.5.14 — Summary signature spacing + iOS text fidelity + bottom Home navigation */
 
 /* Summary base layout: keep the improved signature spacing from v0.5.12. */
 .summary-paper .os-signatures{
@@ -52,4 +52,16 @@ html.ios-pdf-document .summary-paper *,
 html.ios-pdf-document .maintenance-request-paper *{
   -webkit-text-size-adjust:100%!important;
   text-size-adjust:100%!important;
+}
+
+/* Duplicate Home arrow at the bottom of long preview workflows. */
+.screen-bottom-nav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:14px 0 2px;
+  padding:0 2px calc(14px + env(safe-area-inset-bottom,0px));
+}
+.screen-bottom-nav .back{
+  flex:0 0 auto;
 }
