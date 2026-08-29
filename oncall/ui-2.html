@@ -11,7 +11,7 @@ n><textarea name="specialInstructions" rows="2" placeholder="Example: Advised th
     </form>
   </section>
 
-  <section id="summary" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="onCallSummary">On-Call Time Summary</h2><p data-i18n="summarySub">Read-only summary generated from saved reportable events.</p></div></div><div class="card"><div id="summaryPeriod" class="muted"></div><div class="table-wrap top-space"><table><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Notes</th><th>Apt # or TH</th></tr></thead><tbody id="summaryRows"></tbody></table></div><button class="primary top-space" id="previewSummaryBtn" data-i18n="previewSummary">Preview Summary</button></div><div id="summaryPreview" class="card hidden"></div></section>
+  <section id="summary" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="onCallSummary">On-Call Time Summary</h2><p data-i18n="summarySub">Read-only summary generated from saved reportable events.</p></div></div><div class="card"><div id="summaryPeriod" class="muted"></div><div class="table-wrap top-space"><table><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Notes</th><th>Apt # or TH</th></tr></thead><tbody id="summaryRows"></tbody></table></div><button class="primary top-space" id="previewSummaryBtn" data-i18n="previewSummary">Preview Summary</button></div><div id="summaryPreview" class="card hidden"></div><div class="screen-bottom-nav"><button class="back" data-go="dashboard" aria-label="Back to Home" title="Back to Home">←</button></div></section>
 
   <section id="requests" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="maintenanceRequests">Maintenance Requests</h2><p data-i18n="requestsSub">This is the master place to edit or delete events. The On-Call Summary updates automatically.</p></div></div>
 <div class="card">
@@ -24,7 +24,7 @@ n><textarea name="specialInstructions" rows="2" placeholder="Example: Advised th
   </div>
   <div id="folioStatus" class="muted tiny top-space"></div>
 </div>
-<div class="card"><div id="requestList" class="list"></div></div><div id="requestPreview" class="card hidden"></div></section>
+<div class="card"><div id="requestList" class="list"></div></div><div id="requestPreview" class="card hidden"></div><div class="screen-bottom-nav"><button class="back" data-go="dashboard" aria-label="Back to Home" title="Back to Home">←</button></div></section>
 
   <section id="knowledge" class="screen"><div class="screen-head"><button class="back" data-go="dashboard">←</button><div><h2 data-i18n="knowledgeBase">Emergency Knowledge Base</h2><p class="muted">Historical field cases plus solutions learned locally from this technician. Test/exam questions are excluded.</p></div></div>
     <div class="card"><div class="row between wrap gap"><div><b id="knowledgeStats">Knowledge Base</b><div class="muted tiny">Saving a real emergency with a problem and finding/solution teaches this device automatically. Nothing is shared with other technicians in Phase 1.</div></div><button class="secondary" id="addKnowledgeBtn">+ Add Knowledge</button></div><input id="knowledgeSearch" class="top-space" placeholder="Search problem / finding / solution"><div id="knowledgeList" class="list top-space"></div></div></section>
