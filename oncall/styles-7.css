@@ -1,0 +1,46 @@
+/* v0.5.12 — Summary signature spacing + iOS PDF typography fidelity */
+
+/* Summary base layout: give the signature labels breathing room above the signature rule.
+   Net height increase is only ~3px so the approved one-page landscape layout is preserved. */
+.summary-paper .os-signatures{
+  margin-top:10px;
+}
+.summary-paper .os-sign-left,
+.summary-paper .os-sign-right{
+  grid-template-rows:repeat(2,34px);
+  gap:5px;
+}
+.summary-paper .os-signline{
+  display:grid;
+  grid-auto-rows:max-content;
+  align-content:end;
+  row-gap:1px;
+  min-height:34px;
+  padding:0 3px 5px;
+}
+.summary-paper .os-signline small{
+  display:block;
+  font-size:7px;
+  line-height:1.05;
+}
+.summary-paper .os-signline .filled{
+  display:block;
+  font-size:9px;
+  line-height:1.05;
+  padding-bottom:1px;
+}
+
+/* iOS standalone PDF view can enlarge small text independently of the paper geometry.
+   Force the CSS-authored sizes to remain 1:1 with the approved in-app preview. */
+body.ios-pdf-page,
+body.ios-pdf-page #pdfViewport,
+body.ios-pdf-page #pdfRenderRoot,
+body.ios-pdf-page .timecard-paper,
+body.ios-pdf-page .summary-paper,
+body.ios-pdf-page .maintenance-request-paper,
+body.ios-pdf-page .timecard-paper *,
+body.ios-pdf-page .summary-paper *,
+body.ios-pdf-page .maintenance-request-paper *{
+  -webkit-text-size-adjust:100%!important;
+  text-size-adjust:100%!important;
+}
