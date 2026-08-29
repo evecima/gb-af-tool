@@ -79,6 +79,8 @@ body.ios-print-page{
   margin:0!important;
   transform-origin:top left!important;
 }
+body.ios-print-page.print-summary .ios-summary-portrait-page{width:11in;margin:0}
+body.ios-print-page.print-summary .ios-summary-portrait-page .summary-paper{margin:0!important}
 
 @media print{
   html,body{background:#fff!important}
