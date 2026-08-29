@@ -1,0 +1,48 @@
+name: Vendor On-Call PDF libraries
+
+on:
+  push:
+    paths:
+      - '.github/workflows/vendor-oncall-pdf-libs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download pinned browser libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p oncall/vendor
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/koodo-reader/koodo-reader/0750a493343d836434a72c26fb7fdaf12c111d8f/public/lib/pdf-lib/html2canvas.min.js' \
+            -o oncall/vendor/html2canvas.min.js
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/parallax/jsPDF/v2.5.1/dist/jspdf.umd.min.js' \
+            -o oncall/vendor/jspdf.umd.min.js
+          test -s oncall/vendor/html2canvas.min.js
+          test -s oncall/vendor/jspdf.umd.min.js
+          grep -q 'html2canvas' oncall/vendor/html2canvas.min.js
+          grep -q 'jsPDF' oncall/vendor/jspdf.umd.min.js
+
+      - name: Commit vendored libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add oncall/vendor/html2canvas.min.js oncall/vendor/jspdf.umd.min.js
+          if git diff --cached --quiet; then
+            echo 'Vendored libraries already current.'
+            exit 0
+          fi
+          git commit -m 'Vendor On-Call PDF browser libraries'
+          git push
