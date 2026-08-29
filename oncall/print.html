@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1261a0">
 <title>On-Call PDF Print</title>
-<link rel="stylesheet" href="./styles-1.css?v=0.5.10">
-<link rel="stylesheet" href="./styles-2.css?v=0.5.10">
-<link rel="stylesheet" href="./styles-3.css?v=0.5.10">
-<link rel="stylesheet" href="./styles-4.css?v=0.5.10">
-<link rel="stylesheet" href="./styles-5.css?v=0.5.10">
-<link rel="stylesheet" href="./styles-6.css?v=0.5.10">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="./styles-1.css?v=0.5.11">
+<link rel="stylesheet" href="./styles-2.css?v=0.5.11">
+<link rel="stylesheet" href="./styles-3.css?v=0.5.11">
+<link rel="stylesheet" href="./styles-4.css?v=0.5.11">
+<link rel="stylesheet" href="./styles-5.css?v=0.5.11">
+<link rel="stylesheet" href="./styles-6.css?v=0.5.11">
+<script src="./vendor/html2canvas.min.js?v=0.5.11"></script>
+<script src="./vendor/jspdf.umd.min.js?v=0.5.11"></script>
 </head>
 <body class="ios-pdf-page">
 <div class="ios-pdf-toolbar">
@@ -22,7 +22,7 @@
     <button id="shareBtn" class="primary" type="button" disabled>Preparing PDF…</button>
   </div>
 </div>
-<div class="ios-pdf-status" id="pdfStatus">Building a fixed-size PDF for iOS. No browser auto-print is used.</div>
+<div class="ios-pdf-status" id="pdfStatus">Building a fixed-size PDF locally on this device.</div>
 <div class="ios-pdf-viewport" id="pdfViewport"><div class="muted">Loading document…</div></div>
 <div class="ios-pdf-render-root" id="pdfRenderRoot" aria-hidden="true"></div>
 <script>
@@ -80,7 +80,8 @@
   }
 
   async function buildPdf(){
-    if(!window.html2canvas||!window.jspdf?.jsPDF)throw new Error('PDF tools did not load. Check the internet connection and try again.');
+    if(!window.html2canvas)throw new Error('Local html2canvas engine did not load.');
+    if(!window.jspdf?.jsPDF)throw new Error('Local jsPDF engine did not load.');
     const sel=selectorForKind(job.kind);
     const targets=[...renderRoot.querySelectorAll(sel)];
     if(!targets.length)throw new Error('No printable form was found.');
@@ -159,7 +160,7 @@
   window.addEventListener('resize',fitScreen);
 
   try{
-    status.textContent='Preparing the fixed-size PDF…';
+    status.textContent='Preparing the fixed-size PDF locally…';
     pdfBlob=await buildPdf();
     pdfFile=new File([pdfBlob],filename(),{type:'application/pdf'});
     shareBtn.disabled=false;
@@ -170,7 +171,7 @@
       :'PDF ready: US Letter Portrait. Tap Share / Print, then choose Print in the iOS share sheet.';
     shareBtn.addEventListener('click',shareOrOpenPdf);
   }catch(err){
-    setError('Could not build the PDF: '+(err?.message||String(err)));
+    setError('Could not build the local PDF: '+(err?.message||String(err)));
   }
 })();
 </script>
