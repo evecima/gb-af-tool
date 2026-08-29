@@ -1,4 +1,4 @@
-/* v0.5.14 — Summary signature spacing + iOS text fidelity + bottom Home navigation */
+/* v0.5.15 — Summary signature spacing + iOS text fidelity + bottom Home navigation + period lifecycle */
 
 /* Summary base layout: keep the improved signature spacing from v0.5.12. */
 .summary-paper .os-signatures{
@@ -64,4 +64,39 @@ html.ios-pdf-document .maintenance-request-paper *{
 }
 .screen-bottom-nav .back{
   flex:0 0 auto;
+}
+
+/* Pay-period lifecycle / archive controls. */
+.period-lifecycle{
+  border:1px solid #d9e3ea;
+}
+.period-state-line{
+  margin-top:6px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.period-state-line.open{color:#0b7a66}
+.period-state-line.locked{color:#8a5b00}
+.period-locked #hoursEditor,
+.period-locked #fieldEmergencyForm,
+.period-locked #requestList{
+  opacity:.96;
+}
+.period-locked input:disabled,
+.period-locked select:disabled,
+.period-locked textarea:disabled,
+.period-locked button:disabled{
+  cursor:not-allowed;
+}
+.storage-stats{
+  border:1px solid #d9e3ea;
+  border-radius:10px;
+  padding:12px;
+  background:#f8fafb;
+  line-height:1.5;
+  font-size:13px;
+}
+@media(max-width:640px){
+  .period-lifecycle .row.between{align-items:flex-start}
 }
