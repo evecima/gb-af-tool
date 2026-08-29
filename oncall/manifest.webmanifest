@@ -1,8 +1,9 @@
 {
+  "id": "./",
   "name": "On-Call Maintenance Assistant",
   "short_name": "On-Call",
   "description": "Local-first maintenance on-call time card, requests and knowledge base.",
-  "start_url": "./",
+  "start_url": "./?pwa=1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f6f8",
