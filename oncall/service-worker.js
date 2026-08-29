@@ -1,5 +1,5 @@
-const VERSION='0.5.12';
-const CACHE='oncall-maintenance-v0-5-12-layout-fidelity';
+const VERSION='0.5.13';
+const CACHE='oncall-maintenance-v0-5-13-ios-text-fidelity';
 const V='?v='+VERSION;
 const CORE=["./","./index.html","./print.html"+V,"./styles-1.css"+V,"./styles-2.css"+V,"./styles-3.css"+V,"./styles-4.css"+V,"./styles-5.css"+V,"./styles-6.css"+V,"./styles-7.css"+V,"./vendor/html2canvas.min.js"+V,"./vendor/jspdf.umd.min.js"+V,"./ui-1.html"+V,"./ui-2.html"+V,"./ui-3.html"+V,"./ui-4.html"+V,"./seeds-1.js"+V,"./seeds-2.js"+V,"./seeds-3.js"+V,"./seeds-4.js"+V,"./app-01.js"+V,"./app-02.js"+V,"./app-03.js"+V,"./app-04.js"+V,"./app-05.js"+V,"./app-06.js"+V,"./app-07.js"+V,"./app-08.js"+V,"./app-09.js"+V,"./app-10.js"+V,"./app-11.js"+V,"../apartments.js"+V,"./manifest.webmanifest"+V,"./icons/icon.svg"+V];
 const EXTERNAL=[
