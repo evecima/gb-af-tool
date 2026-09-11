@@ -29,7 +29,8 @@
       const card=actions.closest('.card');
       if(card&&!$('#workflowClearPeriodHint')){
         const hint=document.createElement('div');hint.id='workflowClearPeriodHint';hint.className='muted tiny top-space';
-        actions.parentElement?.insertBefore(hint,$('#workflowLogStats'));
+        const stats=$('#workflowLogStats');
+        if(stats&&stats.parentElement===card)card.insertBefore(hint,stats);else card.appendChild(hint);
       }
     }
     refreshPeriodCleanupUI();
@@ -73,9 +74,7 @@
   go=function(id){
     if(id==='emergency'){
       const date=form?.elements?.date?.value||todayISO();
-      if(activatePeriodForDate(date)){
-        updateDashboard();
-      }
+      if(activatePeriodForDate(date))updateDashboard();
     }
     baseGoV061(id);
     if(id==='emergencyLog')ensurePeriodCleanupUI();
