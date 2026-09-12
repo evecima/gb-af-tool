@@ -118,7 +118,7 @@
     const open=relevantDrafts(s);
     if(open.length!==1){syncControls();return toast(open.length>1?'OUT is available only when one final emergency remains. Close another emergency first.':'No final emergency is available to close with OUT.');}
     let d=open[0];if(currentDraftId()===d.id)d=syncFormIntoDraft(d);
-    if(!validateDraft(d)){save(K.activeDraft,d.id);go('emergency');return}
+    if(!validateDraft(d)){go('emergency');setTimeout(()=>{const card=document.querySelector(`.workflow-call[data-draft-id="${d.id}"]`);if(card)card.click()},0);return}
     const end=nowTime();finalizeDraft(d,s,end,{finishSession:true});
     renderAll();go('emergency');syncControls();syncLogTimes();
     toast(`${draftTitle(d)} and the On-Call Session closed together at ${clock(end)}.`);
@@ -158,7 +158,7 @@
       const date=x.date||x.dateReceived||'',parts=[];
       if(x.timeReceived)parts.push(`RCVD ${clock(x.timeReceived)}`);
       const {tin,tout}=recordTimes(x,kind);if(tin)parts.push(`IN ${clock(tin)}`);if(tout)parts.push(`OUT ${clock(tout)}`);
-      meta.textContent=`${mdy(date)}${parts.length?' · '+parts.join(' · '):''}`;
+      const text=`${mdy(date)}${parts.length?' · '+parts.join(' · '):''}`;if(meta.textContent!==text)meta.textContent=text;
     });
     overrideLogExports();
   }
@@ -217,4 +217,5 @@
 
   ensureSessionCursor(activeSession());syncControls();syncLogTimes();installBackupExport();
   const root=$('#emergency');if(root){let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;syncControls()})}).observe(root,{subtree:true,childList:true})}
+  const logRoot=$('#emergencyLog');if(logRoot){let logQueued=false;new MutationObserver(()=>{if(logQueued)return;logQueued=true;requestAnimationFrame(()=>{logQueued=false;syncLogTimes()})}).observe(logRoot,{subtree:true,childList:true})}
 })();
