@@ -1,6 +1,6 @@
-/* v0.6.12 — clean idle Emergency screen: hide the detail form until a call is created or selected */
+/* v0.6.13 — clean idle Emergency screen: hide the detail form until a call is created or selected */
 (function(){
-  const VERSION='0.6.12';
+  const VERSION='0.6.13';
   const form=$('#fieldEmergencyForm');
   const emergency=$('#emergency');
   if(!form||!emergency||!K.emergencyDrafts||!K.activeDraft)return;
@@ -46,18 +46,15 @@
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
     };
     const hint=$('#v069BackupHint');
-    if(hint)hint.textContent='Full v0.6.12 backup: includes Payroll, events, open calls, On-Call sessions and the work-segment cursor, folios, last-folio history, Knowledge Base, vendors, locked periods, Report Dates and settings. Import replaces destination-device local data; it does not merge records.';
+    if(hint)hint.textContent='Full v0.6.13 backup: includes Payroll, events, open calls, On-Call sessions and the work-segment cursor, folios, last-folio history, Knowledge Base, vendors, locked periods, Report Dates and settings. Import replaces destination-device local data; it does not merge records.';
   }
 
-  // Keep the form state aligned with the active draft after every major render/navigation.
   const baseRenderAllV072=renderAll;
   renderAll=function(){baseRenderAllV072();syncEmergencyFormVisibility();installBackupExport()};
 
   const baseGoV072=go;
   go=function(id){baseGoV072(id);if(id==='emergency')setTimeout(syncEmergencyFormVisibility,0);installBackupExport()};
 
-  // New-call, card-selection and close actions already mutate the emergency area.
-  // Observe those UI changes so the form appears/disappears immediately without a new button or extra step.
   let queued=false;
   new MutationObserver(()=>{
     if(queued)return;queued=true;
