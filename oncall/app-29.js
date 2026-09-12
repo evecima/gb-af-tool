@@ -1,6 +1,6 @@
 /* v0.6.17 — Quick Emergency Intake: keep call reception fields visible; defer documentation/closeout into a collapsed section */
 (function(){
-  const VERSION='0.6.17';
+  const VERSION='0.6.18';
   const f=$('#fieldEmergencyForm');
   if(!f)return;
 
@@ -81,7 +81,7 @@
       try{const file=new File([blob],name,{type});if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:name});return}catch(err){if(err?.name==='AbortError')return}}}catch(e){}
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
     };
-    const hint=$('#v069BackupHint');if(hint)hint.textContent='Full v0.6.17 backup: includes Payroll, events, open calls, Quick Intake and closeout data, explicit Start Work state, On-Call sessions and pending work-start cursor, folios, Knowledge Base, vendors, locked periods, Report Dates and settings.';
+    const hint=$('#v069BackupHint');if(hint)hint.textContent='Full v0.6.18 backup: includes Payroll, events, open calls, Quick Intake and closeout data, explicit Start Work state, On-Call sessions and pending work-start cursor, folios, Knowledge Base, vendors, locked periods, Report Dates and settings.';
   }
 
   document.addEventListener('click',e=>{
