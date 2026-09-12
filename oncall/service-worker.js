@@ -1,7 +1,7 @@
-const VERSION='0.6.13';
-const CACHE='oncall-maintenance-v0-6-13-stable-final-call-out';
+const VERSION='0.6.14';
+const CACHE='oncall-maintenance-v0-6-14-explicit-start-work';
 const V='?v='+VERSION;
-const CORE=["./","./index.html","./print.html"+V,"./styles-1.css"+V,"./styles-2.css"+V,"./styles-3.css"+V,"./styles-4.css"+V,"./styles-5.css"+V,"./styles-6.css"+V,"./styles-7.css"+V,"./styles-8.css"+V,"./vendor/html2canvas.min.js"+V,"./vendor/jspdf.umd.min.js"+V,"./ui-1.html"+V,"./ui-2.html"+V,"./ui-3.html"+V,"./ui-4.html"+V,"./seeds-1.js"+V,"./seeds-2.js"+V,"./seeds-3.js"+V,"./seeds-4.js"+V,"./app-01.js"+V,"./app-02.js"+V,"./app-03.js"+V,"./app-04.js"+V,"./app-05.js"+V,"./app-06.js"+V,"./app-07.js"+V,"./app-08.js"+V,"./app-09.js"+V,"./app-10.js"+V,"./app-11.js"+V,"./app-12.js"+V,"./app-13.js"+V,"./app-14.js"+V,"./app-15.js"+V,"./app-16.js"+V,"./app-17.js"+V,"./app-18.js"+V,"./app-19.js"+V,"./app-20.js"+V,"./app-21.js"+V,"./app-22.js"+V,"./app-23.js"+V,"./app-24.js"+V,"./app-25.js"+V,"../apartments.js"+V,"./manifest.webmanifest"+V,"./icons/icon.svg"+V];
+const CORE=["./","./index.html","./print.html"+V,"./styles-1.css"+V,"./styles-2.css"+V,"./styles-3.css"+V,"./styles-4.css"+V,"./styles-5.css"+V,"./styles-6.css"+V,"./styles-7.css"+V,"./styles-8.css"+V,"./vendor/html2canvas.min.js"+V,"./vendor/jspdf.umd.min.js"+V,"./ui-1.html"+V,"./ui-2.html"+V,"./ui-3.html"+V,"./ui-4.html"+V,"./seeds-1.js"+V,"./seeds-2.js"+V,"./seeds-3.js"+V,"./seeds-4.js"+V,"./app-01.js"+V,"./app-02.js"+V,"./app-03.js"+V,"./app-04.js"+V,"./app-05.js"+V,"./app-06.js"+V,"./app-07.js"+V,"./app-08.js"+V,"./app-09.js"+V,"./app-10.js"+V,"./app-11.js"+V,"./app-12.js"+V,"./app-13.js"+V,"./app-14.js"+V,"./app-15.js"+V,"./app-16.js"+V,"./app-17.js"+V,"./app-18.js"+V,"./app-19.js"+V,"./app-20.js"+V,"./app-21.js"+V,"./app-22.js"+V,"./app-23.js"+V,"./app-24.js"+V,"./app-25.js"+V,"./app-26.js"+V,"../apartments.js"+V,"./manifest.webmanifest"+V,"./icons/icon.svg"+V];
 const EXTERNAL=[
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
