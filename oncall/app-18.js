@@ -1,4 +1,4 @@
-/* v0.6.5 — field workflow: clickable calls, autosave-first editing, guarded IN/OUT, single close action */
+/* v0.6.13 compatibility — field workflow: clickable calls, autosave-first editing, final-call OUT guard, single close action */
 (function(){
   const f=$('#fieldEmergencyForm');
   if(!f||!K.emergencyDrafts||!K.activeDraft)return;
@@ -104,8 +104,10 @@
     }
     if(outBtn){
       const stillOpen=s?relevantDrafts(s).length:0;
-      outBtn.disabled=!s||locked||stillOpen>0;
-      outBtn.title=s&&stillOpen>0?`Close ${stillOpen} open emergency call${stillOpen===1?'':'s'} before OUT.`:locked?'This pay period is locked.':'';
+      // v0.6.10+ rule: OUT is intentionally available when exactly one final
+      // emergency remains. Newer workflow code owns the actual OUT action.
+      outBtn.disabled=!s||locked||stillOpen!==1;
+      outBtn.title=locked?'This pay period is locked.':!s?'Start an On-Call Session first.':stillOpen===1?'OUT can close the final emergency and the On-Call Session together.':stillOpen>1?`OUT disabled: ${stillOpen} emergency calls remain open.`:'OUT requires one final open emergency.';
     }
   }
 
@@ -124,10 +126,11 @@
     }
     const outBtn=$('#workflowOutBtn');
     if(outBtn&&outBtn.dataset.v065Wrapped!=='1'){
+      inBtn;
       outBtn.dataset.v065Wrapped='1';const base=outBtn.onclick;
       outBtn.onclick=async e=>{
         const s=activeSession(),stillOpen=s?relevantDrafts(s):[];
-        if(stillOpen.length){toast(`${stillOpen.length} emergency call(s) are still open. Close them before OUT.`);syncSessionControls();return}
+        if(stillOpen.length>1){toast(`${stillOpen.length} emergency call(s) are still open. Close another emergency before OUT.`);syncSessionControls();return}
         if(base)await base.call(outBtn,e);normalizeStatuses();enhanceAll();
       };
     }
