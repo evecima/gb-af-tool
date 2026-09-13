@@ -148,16 +148,20 @@
 
   function activeEmergency(){return drafts().find(d=>d.workflowStatus==='IN_PROGRESS'&&d.workSelected===true)||null}
   function wireOut(){
-    const out=$('#workflowOutBtn');if(!out||out.dataset.v074Out==='1')return;
+    const out=$('#workflowOutBtn');if(!out)return;
+    if(!out.__v074Handler){
+      out.__v074Handler=e=>{
+        e?.preventDefault?.();
+        const d=activeEmergency();if(!d)return;
+        if(currentDraftId()!==d.id){
+          const card=$(`.workflow-call[data-draft-id="${d.id}"]`);card?.click();setTimeout(()=>f.requestSubmit(),30);return;
+        }
+        f.requestSubmit();
+      };
+    }
+    // Older render layers rewrite onclick; re-apply this handler after every render.
+    out.onclick=out.__v074Handler;
     out.dataset.v074Out='1';
-    out.onclick=e=>{
-      e?.preventDefault?.();
-      const d=activeEmergency();if(!d)return;
-      if(currentDraftId()!==d.id){
-        const card=$(`.workflow-call[data-draft-id="${d.id}"]`);card?.click();setTimeout(()=>f.requestSubmit(),30);return;
-      }
-      f.requestSubmit();
-    };
   }
 
   function namespacedStorage(){const out={};for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.startsWith(NS))out[key]=localStorage.getItem(key)}return out}
