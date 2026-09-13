@@ -1,39 +1,16 @@
-const VERSION='0.7.3';
-const CACHE='oncall-maintenance-v0-7-3-synced-reportable-delete';
+const VERSION='0.7.4';
+const CACHE='oncall-maintenance-v0-7-4-emergency-close-guard';
 const V='?v='+VERSION;
-const CORE=["./","./index.html","./print.html"+V,"./styles-1.css"+V,"./styles-2.css"+V,"./styles-3.css"+V,"./styles-4.css"+V,"./styles-5.css"+V,"./styles-6.css"+V,"./styles-7.css"+V,"./styles-8.css"+V,"./vendor/html2canvas.min.js"+V,"./vendor/jspdf.umd.min.js"+V,"./ui-1.html"+V,"./ui-2.html"+V,"./ui-3.html"+V,"./ui-4.html"+V,"./seeds-1.js"+V,"./seeds-2.js"+V,"./seeds-3.js"+V,"./seeds-4.js"+V,"./app-01.js"+V,"./app-02.js"+V,"./app-03.js"+V,"./app-04.js"+V,"./app-05.js"+V,"./app-06.js"+V,"./app-07.js"+V,"./app-08.js"+V,"./app-09.js"+V,"./app-10.js"+V,"./app-11.js"+V,"./app-12.js"+V,"./app-13.js"+V,"./app-14.js"+V,"./app-15.js"+V,"./app-16.js"+V,"./app-17.js"+V,"./app-18.js"+V,"./app-19.js"+V,"./app-20.js"+V,"./app-21.js"+V,"./app-22.js"+V,"./app-23.js"+V,"./app-24.js"+V,"./app-25.js"+V,"./app-26.js"+V,"./app-27.js"+V,"./app-28.js"+V,"./app-29.js"+V,"./app-30.js"+V,"./app-31.js"+V,"./app-32.js"+V,"./app-33.js"+V,"./app-34.js"+V,"../apartments.js"+V,"./manifest.webmanifest"+V,"./icons/icon.svg"+V];
-const EXTERNAL=[
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-];
+const numbered=(prefix,count)=>Array.from({length:count},(_,i)=>`./${prefix}-${String(i+1).padStart(2,'0')}.js${V}`);
+const styles=Array.from({length:8},(_,i)=>`./styles-${i+1}.css${V}`);
+const ui=Array.from({length:4},(_,i)=>`./ui-${i+1}.html${V}`);
+const seeds=Array.from({length:4},(_,i)=>`./seeds-${i+1}.js${V}`);
+const CORE=['./','./index.html','./print.html'+V,...styles,'./vendor/html2canvas.min.js'+V,'./vendor/jspdf.umd.min.js'+V,...ui,...seeds,...numbered('app',35),'../apartments.js'+V,'./manifest.webmanifest'+V,'./icons/icon.svg'+V];
+const EXTERNAL=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
 const INDEX_URL=new URL('./index.html',self.location.href).href;
-
 async function fetchFresh(input){return fetch(input,{cache:'no-store'})}
 async function cachePut(key,response){if(response&&response.ok){const c=await caches.open(CACHE);await c.put(key,response.clone())}return response}
 function isAppRoot(url){const p=url.pathname;return p===new URL('./',self.registration.scope).pathname||p.endsWith('/oncall/index.html')}
-
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);for(const u of CORE){try{const r=await fetchFresh(u);if(r.ok)await c.put(u,r.clone())}catch(e){}}for(const u of EXTERNAL){try{const r=await fetch(u,{mode:'cors'});if(r.ok)await c.put(u,r.clone())}catch(e){}}})());self.skipWaiting()});
-
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});
-
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith((async()=>{const req=event.request,url=new URL(req.url);
-  if(req.mode==='navigate'){
-    try{
-      const r=await fetchFresh(req);
-      const c=await caches.open(CACHE);
-      await c.put(req,r.clone());
-      if(isAppRoot(url))await c.put(INDEX_URL,r.clone());
-      return r;
-    }catch(e){
-      const exact=await caches.match(req);
-      if(exact)return exact;
-      if(isAppRoot(url))return (await caches.match(INDEX_URL))||(await caches.match('./'))||Response.error();
-      return Response.error();
-    }
-  }
-  if(url.origin===self.location.origin){
-    try{const r=await fetchFresh(req);await cachePut(req,r);return r}catch(e){return (await caches.match(req))||Response.error()}
-  }
-  const cached=await caches.match(req);if(cached)return cached;
-  try{const r=await fetch(req);await cachePut(req,r);return r}catch(e){return Response.error()}
-})())});
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith((async()=>{const req=event.request,url=new URL(req.url);if(req.mode==='navigate'){try{const r=await fetchFresh(req),c=await caches.open(CACHE);await c.put(req,r.clone());if(isAppRoot(url))await c.put(INDEX_URL,r.clone());return r}catch(e){const exact=await caches.match(req);if(exact)return exact;if(isAppRoot(url))return(await caches.match(INDEX_URL))||(await caches.match('./'))||Response.error();return Response.error()}}if(url.origin===self.location.origin){try{const r=await fetchFresh(req);await cachePut(req,r);return r}catch(e){return(await caches.match(req))||Response.error()}}const cached=await caches.match(req);if(cached)return cached;try{const r=await fetch(req);await cachePut(req,r);return r}catch(e){return Response.error()}})())});
