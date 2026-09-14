@@ -27,3 +27,4 @@
 
   window.addEventListener('afterprint',clearPrintMode);
 })();
+(function(){const s=document.createElement('script');s.src='./app-49.js?hotfix=0718';document.body.appendChild(s)})();
