@@ -1,4 +1,4 @@
-/* v0.7.17 — Mandatory Maintenance Request uses community header; work locations stay in WORK REQUESTED */
+/* v0.7.17 — Mandatory MR community header + work locations + blank TOTAL TIME */
 (function(){
   const VERSION='0.7.17';
   const WORK_ORDERS='Working on Work Orders';
@@ -64,6 +64,13 @@
     if(changed)save(K.events,events);
   }
 
+  function blankMandatoryTotalTime(paper){
+    for(const row of paper.querySelectorAll('.mr-worker-table tbody tr')){
+      const cells=row.querySelectorAll('td');
+      if(cells.length>=5)cells[4].textContent='';
+    }
+  }
+
   function customizeMandatoryPreview(id){
     const e=(events||[]).find(x=>x.id===id);if(!e||e.type!=='mandatory_ot')return;
     const paper=$('#requestPreview .maintenance-request-paper');if(!paper)return;
@@ -73,6 +80,8 @@
 
     const lines=workRequestedLines(e),workText=paper.querySelector('.mr-work-text');
     if(workText&&lines.length)workText.innerHTML=lines.map(x=>`<div>${esc(x)}</div>`).join('');
+
+    blankMandatoryTotalTime(paper);
   }
 
   if(typeof previewRequest==='function'&&!previewRequest.__v0717CommunityWrapped){
@@ -82,6 +91,7 @@
       base(id);
       customizeMandatoryPreview(id);
       setTimeout(()=>customizeMandatoryPreview(id),0);
+      setTimeout(()=>customizeMandatoryPreview(id),80);
     };
     wrapped.__v0717CommunityWrapped=true;
     previewRequest=wrapped;
