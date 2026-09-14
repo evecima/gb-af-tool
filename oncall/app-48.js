@@ -1,4 +1,4 @@
-/* v0.7.17 — Mandatory MR community header + work locations + blank TOTAL TIME */
+/* v0.7.17 — Mandatory MR community header + work locations + blank TOTAL TIME + preview cleanup */
 (function(){
   const VERSION='0.7.17';
   const WORK_ORDERS='Working on Work Orders';
@@ -84,17 +84,44 @@
     blankMandatoryTotalTime(paper);
   }
 
+  function markRequestPreview(id){
+    const p=$('#requestPreview');
+    if(p)p.dataset.previewEventId=String(id||'');
+  }
+
+  function clearDeletedRequestPreview(id){
+    const p=$('#requestPreview');if(!p)return;
+    const target=String(id||'');
+    if(String(p.dataset.previewEventId||'')!==target)return;
+    if((events||[]).some(e=>String(e.id)===target))return;
+    p.innerHTML='';
+    p.classList.add('hidden');
+    p.classList.remove('print-target');
+    delete p.dataset.previewEventId;
+  }
+
   if(typeof previewRequest==='function'&&!previewRequest.__v0717CommunityWrapped){
     const base=previewRequest;
     const wrapped=function(id){
       normalizeMandatoryMasterData();
       base(id);
+      markRequestPreview(id);
       customizeMandatoryPreview(id);
       setTimeout(()=>customizeMandatoryPreview(id),0);
       setTimeout(()=>customizeMandatoryPreview(id),80);
     };
     wrapped.__v0717CommunityWrapped=true;
     previewRequest=wrapped;
+  }
+
+  if(typeof deleteEvent==='function'&&!deleteEvent.__v0717PreviewCleanupWrapped){
+    const baseDeleteEvent=deleteEvent;
+    const wrappedDeleteEvent=async function(id){
+      await baseDeleteEvent(id);
+      clearDeletedRequestPreview(id);
+    };
+    wrappedDeleteEvent.__v0717PreviewCleanupWrapped=true;
+    deleteEvent=wrappedDeleteEvent;
   }
 
   function schedule(){[0,100,350,900].forEach(ms=>setTimeout(normalizeMandatoryMasterData,ms))}
