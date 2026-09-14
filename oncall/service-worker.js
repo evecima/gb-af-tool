@@ -1,11 +1,11 @@
-const VERSION='0.7.12';
-const CACHE='oncall-maintenance-v0-7-12-pool-editor-cleanup';
+const VERSION='0.7.13';
+const CACHE='oncall-maintenance-v0-7-13-time-received-print-fix';
 const V='?v='+VERSION;
 const numbered=(prefix,count)=>Array.from({length:count},(_,i)=>`./${prefix}-${String(i+1).padStart(2,'0')}.js${V}`);
 const styles=Array.from({length:8},(_,i)=>`./styles-${i+1}.css${V}`);
 const ui=Array.from({length:4},(_,i)=>`./ui-${i+1}.html${V}`);
 const seeds=Array.from({length:4},(_,i)=>`./seeds-${i+1}.js${V}`);
-const CORE=['./','./index.html','./print.html'+V,...styles,'./vendor/html2canvas.min.js'+V,'./vendor/jspdf.umd.min.js'+V,...ui,...seeds,...numbered('app',43),'../apartments.js'+V,'./manifest.webmanifest'+V,'./icons/icon.svg'+V];
+const CORE=['./','./index.html','./print.html'+V,...styles,'./vendor/html2canvas.min.js'+V,'./vendor/jspdf.umd.min.js'+V,...ui,...seeds,...numbered('app',44),'../apartments.js'+V,'./manifest.webmanifest'+V,'./icons/icon.svg'+V];
 const EXTERNAL=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
 const INDEX_URL=new URL('./index.html',self.location.href).href;
 async function fetchFresh(input){return fetch(input,{cache:'no-store'})}
