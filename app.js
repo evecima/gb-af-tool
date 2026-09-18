@@ -1,138 +1,31 @@
-(() => {
-  const DATA = window.APARTMENT_DATA || [];
-  const byUnit = new Map(DATA.map(r => [r.unit, r]));
-  const byNumber = new Map(DATA.map(r => [String(r.number), r]));
-  const byBuilding = new Map();
-
-  for (const r of DATA) {
-    if (!byBuilding.has(r.building)) byBuilding.set(r.building, []);
-    byBuilding.get(r.building).push(r);
-  }
-  for (const arr of byBuilding.values()) arr.sort((a,b) => a.number - b.number);
-
-  const $ = (id) => document.getElementById(id);
-  const aptInput = $("apt");
-  const result = $("result");
-  const buildingSelect = $("building");
-  const buildingResult = $("buildingResult");
-  const offlineStatus = $("offlineStatus");
-  const installBtn = $("installBtn");
-
-  function normalize(value) {
-    return String(value || "").trim().toUpperCase().replace(/[\s\-_.]/g, "");
-  }
-
-  function lookupApartment() {
-    const q = normalize(aptInput.value);
-    if (!q) {
-      result.className = "result";
-      result.innerHTML = "";
-      return;
-    }
-    let record = byUnit.get(q);
-    if (!record && /^\d+$/.test(q)) {
-      record = byNumber.get(String(parseInt(q, 10)));
-    }
-    renderApartment(record);
-  }
-
-  function renderApartment(record) {
-    if (!record) {
-      result.className = "result show notfound";
-      result.innerHTML = `
-        <div class="apt-eyebrow">No match</div>
-        <div class="apt-value">Apartment not found</div>
-        <div class="hint">Check the number and try again.</div>`;
-      return;
-    }
-    result.className = "result show";
-    result.innerHTML = `
-      <div class="apt-eyebrow">Apartment</div>
-      <div class="apt-value">${record.unit}</div>
-      <div class="building-label">Building</div>
-      <div class="building-value">${record.building}</div>`;
-  }
-
-  [...byBuilding.keys()].sort((a,b) => Number(a)-Number(b)).forEach(b => {
-    const opt = document.createElement("option");
-    opt.value = b;
-    opt.textContent = `Building ${b}`;
-    buildingSelect.appendChild(opt);
-  });
-
-  buildingSelect.addEventListener("change", () => {
-    const b = buildingSelect.value;
-    if (!b) {
-      buildingResult.innerHTML = "";
-      return;
-    }
-    const units = byBuilding.get(b) || [];
-    buildingResult.innerHTML = `
-      <div class="building-head">Building ${b}</div>
-      <div class="units">${units.map(r => `<span class="unit">${r.unit}</span>`).join("")}</div>
-      <div class="count">${units.length} apartment${units.length === 1 ? "" : "s"}</div>`;
-  });
-
-  $("findBtn").addEventListener("click", lookupApartment);
-  aptInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") lookupApartment();
-  });
-  aptInput.addEventListener("input", () => {
-    if (normalize(aptInput.value).length >= 1) {
-      lookupApartment();
-    } else {
-      result.className = "result";
-      result.innerHTML = "";
-    }
-  });
-
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-      document.querySelectorAll(".panel").forEach(x => x.classList.remove("active"));
-      tab.classList.add("active");
-      $(tab.dataset.panel).classList.add("active");
-      if (tab.dataset.panel === "searchPanel") {
-        setTimeout(() => aptInput.focus(), 50);
-      }
-    });
-  });
-
-  function updateConnection() {
-    if (navigator.onLine) {
-      offlineStatus.textContent = "Ready";
-      offlineStatus.title = "Online. The installed app can also work offline.";
-    } else {
-      offlineStatus.textContent = "Offline";
-      offlineStatus.title = "No internet connection; local apartment lookup is still available.";
-    }
-  }
-  window.addEventListener("online", updateConnection);
-  window.addEventListener("offline", updateConnection);
-  updateConnection();
-
-  // PWA install prompt on supported browsers.
-  let deferredPrompt = null;
-  window.addEventListener("beforeinstallprompt", e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = "block";
-  });
-  installBtn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn.style.display = "none";
-  });
-
-  // Service workers require HTTPS or localhost; the app still works when index.html is opened directly.
-  if ("serviceWorker" in navigator && location.protocol !== "file:") {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-    });
-  }
-
-  // Focus the main lookup field on larger screens; mobile browsers may intentionally suppress autofocus.
-  if (window.matchMedia("(min-width: 700px)").matches) aptInput.focus();
+(()=>{'use strict';
+const DATA=window.APARTMENT_DATA||[],POS=window.MAP_POSITIONS||{},NS='http://www.w3.org/2000/svg';
+const byUnit=new Map(DATA.map(r=>[r.unit,r])),byNum=new Map(DATA.map(r=>[String(r.number),r])),byBuilding=new Map();
+for(const r of DATA){if(!byBuilding.has(r.building))byBuilding.set(r.building,[]);byBuilding.get(r.building).push(r)}
+for(const arr of byBuilding.values())arr.sort((a,b)=>a.number-b.number);
+const $=id=>document.getElementById(id),apt=$('apt'),res=$('apartmentResult'),select=$('building'),buildingRes=$('buildingResult'),mapInfo=$('mapInfo'),svg=$('mapSvg'),focus=$('focusLayer');
+const FULL={x:0,y:0,w:1619,h:971};let view={...FULL},selected=null,zoom=1,tween=0,drag=null;
+const norm=s=>String(s||'').trim().toUpperCase().replace(/[\s\-_.]/g,'');
+const el=(tag,attr={})=>{let e=document.createElementNS(NS,tag);for(let [k,v] of Object.entries(attr))e.setAttribute(k,String(v));return e};
+function activate(panel){document.querySelectorAll('.tab').forEach(t=>{let on=t.dataset.panel===panel;t.classList.toggle('active',on);t.setAttribute('aria-selected',String(on))});document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===panel))}
+function chips(units){return '<div class="chips">'+units.map(u=>'<span class="chip">'+u.unit+'</span>').join('')+'</div>'}
+function find(){const q=norm(apt.value);if(!q){res.className='result';res.innerHTML='';return}let r=byUnit.get(q);if(!r&&/^\d+$/.test(q))r=byNum.get(String(parseInt(q,10)));if(!r){res.className='result show error';res.innerHTML='<strong>Apartment not found.</strong><p class="hint">Check the number and try again.</p>';return}res.className='result show';res.innerHTML='<div class="result-head"><div><div class="eyebrow">Apartment</div><div class="big-number">'+r.unit+'</div></div><div><div class="eyebrow">Building</div><div class="big-number">'+r.building+'</div></div></div><div class="result-actions"><button type="button" class="btn" id="resultMap">⌖ &nbsp; View on map</button></div>';$('resultMap').addEventListener('click',()=>showBuilding(r.building,true))}
+function listBuilding(b){const units=byBuilding.get(b)||[];if(!units.length){buildingRes.innerHTML='';return}buildingRes.innerHTML='<div class="eyebrow">Building</div><div class="big-number">'+b+'</div><p class="count">'+units.length+' apartments</p>'+chips(units)+'<div class="result-actions"><button type="button" class="btn" id="buildingMap">⌖ &nbsp; View on map</button></div>';$('buildingMap').addEventListener('click',()=>showBuilding(b,true))}
+function viewBox(v){view={...v};svg.setAttribute('viewBox',[v.x,v.y,v.w,v.h].join(' '));$('zoomLabel').textContent=Math.round(FULL.w/v.w*100)+'%'}
+function clamp(v){const w=Math.min(FULL.w,Math.max(320,v.w));const h=w*FULL.h/FULL.w;return {x:Math.max(0,Math.min(FULL.w-w,v.x)),y:Math.max(0,Math.min(FULL.h-h,v.y)),w,h}}
+function go(target,animate=true){cancelAnimationFrame(tween);const to=clamp(target);if(!animate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){viewBox(to);return}const from={...view},start=performance.now(),duration=400;function step(t){const a=Math.min(1,(t-start)/duration),f=1-Math.pow(1-a,3);viewBox({x:from.x+(to.x-from.x)*f,y:from.y+(to.y-from.y)*f,w:from.w+(to.w-from.w)*f,h:from.h+(to.h-from.h)*f});if(a<1)tween=requestAnimationFrame(step)}tween=requestAnimationFrame(step)}
+function focusAt(b){const p=POS[b];if(!p)return;const targetW=FULL.w/2.7,targetH=FULL.h/2.7;go({x:p.x-targetW/2,y:p.y-targetH/2,w:targetW,h:targetH},true)}
+function renderFocus(b){focus.replaceChildren();const p=POS[b];if(!p)return;const rect=el('rect',{x:p.x-27,y:p.y-25,width:54,height:50,rx:6,class:'active-ring pulsing'});focus.append(rect);const labelY=Math.max(28,p.y-66);const stem=el('line',{x1:p.x,y1:p.y-28,x2:p.x,y2:labelY+22,stroke:'#087b53','stroke-width':3});const badge=el('rect',{x:p.x-45,y:labelY-7,width:90,height:38,rx:16,class:'pin-label'});const text=el('text',{x:p.x,y:labelY+13,class:'pin-id'});text.textContent=b;focus.append(stem,badge,text);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){rect.addEventListener('animationend',()=>rect.classList.remove('pulsing'),{once:true})}}
+function renderInfo(b){const units=byBuilding.get(b)||[];mapInfo.className='map-info show';mapInfo.innerHTML='<div class="map-info-head"><div><div class="eyebrow">Selected building</div><strong>'+b+'</strong></div><button type="button" class="tool reset" id="infoReset">Full map</button></div><p class="count">'+units.length+' apartments</p>'+chips(units);$('infoReset').addEventListener('click',reset)}
+function showBuilding(b,openMap){if(!POS[b])return;selected=b;renderFocus(b);renderInfo(b);$('mapMode').textContent='Building '+b;if(openMap)activate('mapPanel');focusAt(b)}
+function reset(){/* Keep the current building selected; only restore the full-map viewport. */go(FULL,true)}
+function changeZoom(factor){const centerX=view.x+view.w/2,centerY=view.y+view.h/2,w=view.w/factor,h=w*FULL.h/FULL.w;go({x:centerX-w/2,y:centerY-h/2,w,h},true)}
+Object.keys(POS).sort((a,b)=>Number(a)-Number(b)).forEach(b=>{const p=POS[b],g=el('g',{role:'button',tabindex:'0','aria-label':'Building '+b+'; tap to see apartments'});let hit=el('rect',{x:p.x-22,y:p.y-21,width:44,height:42,rx:5,class:'map-hit'});g.append(hit);g.addEventListener('click',()=>{if(drag?.moved)return;showBuilding(b,false)});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showBuilding(b,false)}});$('hotspots').append(g);const o=document.createElement('option');o.value=b;o.textContent='Building '+b;select.append(o)});
+$('findBtn').addEventListener('click',find);apt.addEventListener('keydown',e=>{if(e.key==='Enter')find()});apt.addEventListener('input',()=>{if(!apt.value.trim()){res.className='result';res.innerHTML=''}else find()});select.addEventListener('change',()=>listBuilding(select.value));document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>activate(b.dataset.panel)));$('zoomIn').addEventListener('click',()=>changeZoom(1.55));$('zoomOut').addEventListener('click',()=>changeZoom(1/1.55));$('resetMap').addEventListener('click',reset);
+// Pointer drag pans an already zoomed map. Touch-action none prevents accidental page scroll while dragging map.
+svg.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...view},moved:false};svg.setPointerCapture(e.pointerId)});
+svg.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;if(!drag.moved)return;cancelAnimationFrame(tween);const br=svg.getBoundingClientRect();viewBox(clamp({...drag.start,x:drag.start.x-dx*drag.start.w/br.width,y:drag.start.y-dy*drag.start.h/br.height}))});
+svg.addEventListener('pointerup',e=>{if(drag&&drag.id===e.pointerId){const moved=drag.moved;setTimeout(()=>{if(drag?.id===e.pointerId)drag=null},moved?0:30)}});svg.addEventListener('pointercancel',()=>drag=null);
+svg.addEventListener('wheel',e=>{e.preventDefault();changeZoom(e.deltaY<0?1.2:1/1.2)},{passive:false});
+if('serviceWorker' in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 })();
