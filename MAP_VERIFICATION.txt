@@ -1,0 +1,4 @@
+Apartment Finder v3 map verification
+User-confirmed: all 54 residential building locations, in seven batches, final batch September 18, 2026.
+Final batch: 3555, 3710, 3720, 3730, 3760, 3770, 3780, 3825, 3835, 3845, 3855.
+Apartment data preserved from v2, including 500 records.

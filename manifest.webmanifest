@@ -1,7 +1,7 @@
 {
   "name": "Apartment Finder",
   "short_name": "Apt Finder",
-  "description": "Fast apartment-to-building lookup.",
+  "description": "Apartment and building lookup with interactive property map.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,10 +1,12 @@
-const CACHE = "apartment-finder-v2-1";
+const CACHE = "apartment-finder-v3-release-1";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./apartments.js",
+  "./map-positions.js",
+  "./map/site-plan.png",
   "./manifest.webmanifest",
   "./robots.txt",
   "./icons/icon-192.png",
