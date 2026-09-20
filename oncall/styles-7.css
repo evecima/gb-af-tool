@@ -129,3 +129,21 @@ html.ios-pdf-document .maintenance-request-paper *{
   body.print-payroll .tc-analysis-label.main{padding-left:48px!important}
   body.print-payroll .tc-analysis-label:not(.main){padding-left:61px!important}
 }
+
+/* v0.7.21 — print presentation refinement only.
+   End the two left signature rules at the user-marked one-third point.
+   Raise the right-hand date fields (their text, rules and captions together).
+   Move the analysis WORDING closer to TOTALS, not the payroll boxes. */
+.summary-paper .os-sign-left .os-signline::after{
+  right:auto!important;
+  width:31%!important;
+}
+.summary-paper .os-sign-right .os-signline{
+  position:relative;
+  top:-6px;
+}
+.timecard-paper .tc-analysis-head .tc-bottom-title,
+.timecard-paper .tc-analysis-label{
+  position:relative;
+  left:48px;
+}
