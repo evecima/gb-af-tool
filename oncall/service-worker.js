@@ -1,12 +1,12 @@
-const VERSION='0.7.21';
-const CACHE='oncall-maintenance-v0-7-21';
+const VERSION='0.7.22';
+const CACHE='oncall-maintenance-v0-7-22';
 const V='?v='+VERSION;
 const numbered=(prefix,count)=>Array.from({length:count},(_,i)=>`./${prefix}-${String(i+1).padStart(2,'0')}.js${V}`);
 const styles=Array.from({length:8},(_,i)=>`./styles-${i+1}.css${V}`);
 const printStyles=Array.from({length:7},(_,i)=>`./styles-${i+1}.css?v=0.5.15`);
 const ui=Array.from({length:4},(_,i)=>`./ui-${i+1}.html${V}`);
 const seeds=Array.from({length:4},(_,i)=>`./seeds-${i+1}.js${V}`);
-const CORE=['./','./index.html','./print.html'+V,...styles,...printStyles,'./vendor/html2canvas.min.js'+V,'./vendor/jspdf.umd.min.js'+V,...ui,...seeds,...numbered('app',48),'./app-50.js'+V,'../apartments.js'+V,'./manifest.webmanifest'+V,'./icons/icon.svg'+V];
+const CORE=['./','./index.html','./print.html'+V,...styles,...printStyles,'./vendor/html2canvas.min.js'+V,'./vendor/jspdf.umd.min.js'+V,...ui,...seeds,...numbered('app',48),'./app-50.js'+V,'./app-51.js'+V,'../apartments.js'+V,'./manifest.webmanifest'+V,'./icons/icon.svg'+V];
 const EXTERNAL=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
 const INDEX_URL=new URL('./index.html',self.location.href).href;
 async function fetchFresh(input){return fetch(input,{cache:'no-store'})}
