@@ -100,3 +100,32 @@ html.ios-pdf-document .maintenance-request-paper *{
 @media(max-width:640px){
   .period-lifecycle .row.between{align-items:flex-start}
 }
+
+/* v0.7.20 — PRINT LAYOUT ONLY. Keep paper dimensions, table geometry and data untouched.
+   The original Summary form has signature rules above the signature captions,
+   not underneath them. Draw the rules inside their existing fixed-height rows. */
+.summary-paper .os-signline{
+  position:relative;
+  border-bottom:0!important;
+}
+.summary-paper .os-signline::after{
+  content:"";
+  position:absolute;
+  left:3px;
+  right:3px;
+  bottom:19px;
+  border-top:1px solid #111;
+  pointer-events:none;
+}
+.summary-paper .os-sign-right .os-signline::after{bottom:15px}
+
+/* Nudge only the PAID HOURS ANALYSIS wording toward the existing TOTALS boxes.
+   Do not move the boxes, lower section, or any payroll/time-card values. */
+.timecard-paper .tc-analysis-head .tc-bottom-title{padding-left:52px!important}
+.timecard-paper .tc-analysis-label.main{padding-left:52px!important}
+.timecard-paper .tc-analysis-label:not(.main){padding-left:66px!important}
+@media print{
+  body.print-payroll .tc-analysis-head .tc-bottom-title{padding-left:48px!important}
+  body.print-payroll .tc-analysis-label.main{padding-left:48px!important}
+  body.print-payroll .tc-analysis-label:not(.main){padding-left:61px!important}
+}
