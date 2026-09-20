@@ -1,16 +1,21 @@
-/* v0.7.18 — Single-save Mandatory boundary synchronization + return to source list. */
+/* v0.7.19 — Synchronize Mandatory from saved event segments even when activity history is absent. */
 (function(){
   const state=()=>window.reportableWorkState;
   const cleanTime=t=>/^\d{2}:\d{2}$/.test(String(t||''))?String(t):'';
   const minutes=t=>Number(t.slice(0,2))*60+Number(t.slice(3,5));
   const sameDay=(start,end)=>!!(start&&end&&minutes(start)<=minutes(end));
   const work=s=>s&&s.kind!=='emergency';
+  const eligible=ev=>ev?.type==='mandatory_ot'&&ev.source==='reportable-work-v070';
 
   function mandatoryActivity(ev){
-    if(ev?.type!=='mandatory_ot'||ev.source!=='reportable-work-v070')return null;
-    const st=state();
-    const a=st?.activities?.find(x=>x.id===ev.reportableWorkId||x.parentEventId===ev.id);
-    return a?.type==='mandatory_ot'&&a.status==='CLOSED'&&a.parentEventId===ev.id?a:null;
+    if(!eligible(ev))return null;
+    const a=state()?.activities?.find(x=>x.parentEventId===ev.id||(x.id===ev.reportableWorkId&&(!x.parentEventId||x.parentEventId===ev.id)));
+    return a?.type==='mandatory_ot'&&a.status==='CLOSED'?a:null;
+  }
+
+  function segmentsFor(ev,a){
+    // Event segments survive FULL exports even if reportableWork.activities is empty.
+    return clone((Array.isArray(ev.reportableSegments)&&ev.reportableSegments.length?ev.reportableSegments:a?.segments)||[]);
   }
 
   function buildTimeline(segs){
@@ -18,36 +23,36 @@
   }
 
   function syncMandatory(ev,commit=true){
-    const a=mandatoryActivity(ev);
-    if(!a)return {ok:true,changed:false};
-    const start=cleanTime(ev.in),end=cleanTime(ev.out);
-    if(!sameDay(start,end))return {ok:false,reason:'The Mandatory IN and OUT must be valid, same-day times.'};
-    const segs=clone((a.segments?.length?a.segments:ev.reportableSegments)||[]);
+    if(!eligible(ev))return {ok:true,changed:false};
+    const a=mandatoryActivity(ev),segs=segmentsFor(ev,a);
     if(!segs.length)return {ok:true,changed:false};
+    const start=cleanTime(ev.in),end=cleanTime(ev.out);
+    if(!sameDay(start,end))return {ok:false,changed:false,reason:'Mandatory IN and OUT must be valid, same-day times.'};
     const first=segs.findIndex(work),last=segs.map(work).lastIndexOf(true);
-    // Edits to sessions bounded by an Emergency require an explicit timeline editor.
-    if(first!==0||last!==segs.length-1)return {ok:true,changed:false};
-    if(!segs.every(s=>sameDay(cleanTime(s.start),cleanTime(s.end))))return {ok:true,changed:false};
-    const beforeStart=segs[first].start,beforeEnd=segs[last].end;
-    const changeStart=beforeStart!==start,changeEnd=beforeEnd!==end;
+    if(first<0||last<0)return {ok:true,changed:false};
+    if(!segs.every(s=>sameDay(cleanTime(s.start),cleanTime(s.end))))return {ok:false,changed:false,reason:'A saved work segment has invalid hours.'};
+    const changeStart=segs[first].start!==start,changeEnd=segs[last].end!==end;
     if(!changeStart&&!changeEnd)return {ok:true,changed:false};
-    if(!sameDay(start,segs[first].end)||!sameDay(segs[last].start,end)){
-      return {ok:false,reason:'The corrected time would cross an existing work segment. Review the timeline before saving.'};
+    if(first!==0||last!==segs.length-1){
+      return {ok:false,changed:false,reason:'Mandatory starts or finishes during an emergency. Review its full timeline before changing these boundaries.'};
     }
-    const oldTimeline=buildTimeline(segs),oldActivityTimeline=buildTimeline(a.segments||[]);
+    if(!sameDay(start,segs[first].end)||!sameDay(segs[last].start,end)){
+      return {ok:false,changed:false,reason:'The corrected time would cross an existing work segment. Review the timeline before saving.'};
+    }
+    const oldTimeline=buildTimeline(segs);
+    const oldActivityTimeline=buildTimeline(a?.segments||[]);
     segs[first].start=start;segs[last].end=end;
     if(!commit)return {ok:true,changed:true};
-    a.start=start;a.end=end;a.segments=clone(segs);a.updatedAt=new Date().toISOString();
     ev.reportableSegments=clone(segs);
-    if(!String(ev.solution||'').trim()||[oldTimeline,oldActivityTimeline].includes(String(ev.solution||'').trim())){
-      ev.solution=buildTimeline(segs);
-    }
+    if(a){a.start=start;a.end=end;a.segments=clone(segs);a.updatedAt=new Date().toISOString()}
+    const currentText=String(ev.solution||'').trim();
+    if(!currentText||currentText===oldTimeline.trim()||currentText===oldActivityTimeline.trim())ev.solution=buildTimeline(segs);
     ev.mandatoryActualMinutes=segs.filter(work).reduce((n,s)=>n+Math.max(0,minutes(s.end)-minutes(s.start)),0);
-    return {ok:true,changed:true};
+    return {ok:true,changed:true,activityChanged:!!a};
   }
 
   function backupBeforeRepair(){
-    const key=NS+'mandatory_edit_sync_backup_0718';
+    const key=NS+'mandatory_edit_sync_backup_0719';
     try{
       if(localStorage.getItem(key))return true;
       localStorage.setItem(key,JSON.stringify({savedAt:new Date().toISOString(),events:clone(events),reportableWork:clone(state())}));
@@ -56,29 +61,33 @@
   }
 
   function repairSavedBoundaries(){
-    const candidates=(events||[]).filter(ev=>mandatoryActivity(ev));
-    if(!candidates.some(ev=>syncMandatory(ev,false).changed))return false;
+    const candidates=(events||[]).filter(eligible);
+    const pending=candidates.map(ev=>({ev,check:syncMandatory(ev,false)})).filter(x=>x.check.changed);
+    if(!pending.length)return false;
     if(!backupBeforeRepair()){
-      toast('Mandatory synchronization needs storage space for a safety backup. Export your full backup before editing.');
+      toast('Mandatory synchronization needs storage space for a safety backup. Export a full backup before editing.');
       return false;
     }
-    let changed=false;
-    for(const ev of candidates){
-      const outcome=syncMandatory(ev);
-      if(outcome.changed)changed=true;
-      if(!outcome.ok)console.warn('Mandatory timeline left unchanged:',ev.id,outcome.reason);
+    let changed=false,activityChanged=false;
+    for(const {ev} of pending){
+      const result=syncMandatory(ev,true);
+      if(result.changed){changed=true;activityChanged=activityChanged||result.activityChanged}
+      else if(!result.ok)console.warn('Mandatory timeline left unchanged:',ev.id,result.reason);
     }
-    if(changed){save(K.reportableWork,state());save(K.events,events)}
+    if(changed){
+      if(activityChanged&&state()&&K.reportableWork)save(K.reportableWork,state());
+      save(K.events,events);
+    }
     return changed;
   }
 
-  // Show the corrected generated text in the editor before Save, without altering stored data.
+  // Preview the generated timeline as the technician edits the boundary, without saving early.
   document.addEventListener('input',event=>{
     const form=event.target?.closest?.('#eventEditorForm');
     if(!form||!['in','out'].includes(event.target.name))return;
-    const ev=(events||[]).find(x=>x.id===editingEventId),a=mandatoryActivity(ev);
-    if(!a||!form.elements.solution)return;
-    const original=clone((a.segments?.length?a.segments:ev.reportableSegments)||[]);
+    const ev=(events||[]).find(x=>x.id===editingEventId);
+    if(!eligible(ev)||!form.elements.solution)return;
+    const original=segmentsFor(ev,mandatoryActivity(ev));
     if(!original.length||String(ev.solution||'').trim()!==buildTimeline(original).trim())return;
     const first=original.findIndex(work),last=original.map(work).lastIndexOf(true);
     if(first!==0||last!==original.length-1)return;
@@ -88,16 +97,15 @@
     form.elements.solution.value=buildTimeline(original);
   },true);
 
-  // Preserve the editor's own field handling but stop its forced Preview navigation.
+  // Suppress the legacy editor's automatic Preview; return to the source list instead.
   let savingEditor=false;
   const basePreview=previewRequest;
   previewRequest=function(id){if(savingEditor)return;return basePreview(id)};
-
   document.addEventListener('submit',event=>{
     if(event.target?.id!=='eventEditorForm')return;
     const form=event.target,ev=(events||[]).find(x=>x.id===editingEventId);
     if(!ev)return;
-    if(mandatoryActivity(ev)){
+    if(eligible(ev)){
       const candidate={...ev,in:form.elements.in?.value,out:form.elements.out?.value};
       const check=syncMandatory(candidate,false);
       if(!check.ok){event.preventDefault();event.stopImmediatePropagation();toast(check.reason);return}
@@ -110,8 +118,7 @@
     savingEditor=true;
     setTimeout(()=>{
       savingEditor=false;
-      const changed=repairSavedBoundaries();
-      if(changed){renderAll()}
+      if(repairSavedBoundaries())renderAll();
       const preview=$('#requestPreview');
       if(preview){preview.classList.add('hidden');preview.classList.remove('print-target');preview.innerHTML='';delete preview.dataset.previewEventId}
       if(origin&&document.getElementById(origin)&&!document.getElementById(origin).classList.contains('active'))go(origin);
@@ -119,8 +126,6 @@
     },0);
   },true);
 
-  // Repair previously saved, inconsistent Mandatory records without touching Humanity.
-  if(repairSavedBoundaries()){
-    renderRequests();renderSummary();
-  }
+  // One-time safe migration of saved discrepancies; never modifies Humanity/Payroll.
+  if(repairSavedBoundaries()){renderRequests();renderSummary()}
 })();
