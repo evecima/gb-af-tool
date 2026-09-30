@@ -72,6 +72,7 @@
   }
 
   function customizeMandatoryPreview(id){
+    if($('#requestPreview')?.dataset.previewEventId!==String(id))return;
     const e=(events||[]).find(x=>x.id===id);if(!e||e.type!=='mandatory_ot')return;
     const paper=$('#requestPreview .maintenance-request-paper');if(!paper)return;
 

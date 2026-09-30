@@ -34,11 +34,12 @@
       </div>
       <div id="pdfStatus" class="notice muted" data-i18n="noPdf">No Humanity PDF selected.</div>
     </div>
+    <div class="payroll-jump row gap wrap"><button type="button" class="secondary" id="payrollDownBtn" data-i18n="payrollDown">↓ Go to Time Card Preview</button></div>
     <div class="card" id="hoursEditor">
       <div class="row between wrap gap"><div><h3 id="hoursModeTitle">Review / Edit Hours</h3><div class="muted tiny" id="hoursModeHelp"></div></div><div class="row gap wrap"><button class="secondary" id="fill14Btn" data-i18n="create14">Create 14 Days</button><button class="primary" id="saveHoursBtn" data-i18n="saveHours">Save Hours</button><button class="secondary" id="resetImportedBtn" data-i18n="resetImported">Reset to Imported PDF</button><button class="dangerbtn" id="clearHoursBtn" data-i18n="clearPayroll">Clear Payroll Data</button></div></div>
       <div class="quick-note top-space"><b data-i18n="reportableRule">Automatic reportable-time guide:</b> <span data-i18n="ruleText">weekends = reportable; weekdays = work before 8:00 AM plus work after 8 regular worked hours beginning at 8:00 AM. The technician still decides what event actually occurred.</span></div>
       <div id="daysEditor" class="days-editor"></div>
-      <div class="row gap wrap top-space"><button class="primary" id="previewPayrollBtn" data-i18n="previewPayroll">Preview TIME CARD</button></div>
+      <div class="row gap wrap top-space"><button class="primary" id="previewPayrollBtn" data-i18n="previewPayroll">Preview TIME CARD</button><button type="button" class="secondary payroll-up" data-i18n="payrollUp">↑ Back to Payroll</button></div>
     </div>
     <div id="payrollPreview" class="card hidden"></div>
     <div class="screen-bottom-nav"><button class="back" data-go="dashboard" aria-label="Back to Home" title="Back to Home">←</button></div>

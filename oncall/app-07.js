@@ -1,5 +1,33 @@
+function refreshRequestNavigation(){
+  const p=$('#requestPreview');
+  if(!p||p.classList.contains('hidden'))return;
+  const es=eventsPeriod(),index=es.findIndex(e=>String(e.id)===p.dataset.previewEventId);
+  if(index<0){
+    p.classList.add('hidden');p.classList.remove('print-target');p.innerHTML='';
+    delete p.dataset.previewEventId;
+    return;
+  }
+  const nav=p.querySelector('.request-preview-nav');if(!nav)return;
+  const spanish=settings.language==='es';
+  nav.setAttribute('aria-label',spanish?'Navegar Maintenance Requests':'Navigate Maintenance Requests');
+  nav.innerHTML=`<button type="button" class="secondary request-previous" ${index===0?'disabled':''}>← ${spanish?'Anterior':'Previous'}</button><span role="status" aria-live="polite" aria-atomic="true">${index+1} ${spanish?'de':'of'} ${es.length}</span><button type="button" class="secondary request-next" ${index===es.length-1?'disabled':''}>${spanish?'Siguiente':'Next'} →</button>`;
+  nav.querySelector('.request-previous').onclick=()=>navigateRequest(-1);
+  nav.querySelector('.request-next').onclick=()=>navigateRequest(1);
+}
+function navigateRequest(step){
+  const p=$('#requestPreview'),es=eventsPeriod();
+  const index=es.findIndex(e=>String(e.id)===p?.dataset.previewEventId);
+  if(index<0){refreshRequestNavigation();return}
+  const target=es[index+step];if(!target)return;
+  previewRequest(target.id);
+  const nav=p.querySelector('.request-preview-nav');
+  const direction=step<0?'.request-previous':'.request-next';
+  const button=nav?.querySelector(direction);
+  (button&&!button.disabled?button:nav?.querySelector('button:not(:disabled)'))?.focus({preventScroll:true});
+}
 function previewRequest(id){
   const e=events.find(x=>x.id===id),p=$('#requestPreview');if(!e)return;
+  p.dataset.previewEventId=String(id);
   const eventTitle=esc(eventLabel(e));
   const workBody=[e.finding,e.solution].filter(Boolean).map(x=>esc(x)).join('\n');
   const contractor=e.vendor?[`Contractor/Vendor: ${e.vendor}`,e.vendorWork?`Contractor work: ${e.vendorWork}`:''].filter(Boolean).join(' — '):'';
@@ -21,7 +49,8 @@ function previewRequest(id){
     '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
   ].join('');
   p.classList.remove('hidden');p.classList.add('print-target');
-  p.innerHTML=`<div class="row between"><h3>MAINTENANCE REQUEST — Preview</h3><button class="secondary" onclick="printForm('request')">Print</button></div>
+  p.innerHTML=`<div class="row between wrap gap"><h3>MAINTENANCE REQUEST — Preview</h3><button class="secondary" onclick="printForm('request')">Print</button></div>
+  <nav class="request-preview-nav"></nav>
   <div class="maintenance-request-paper">
     <div class="mr-property"><div class="mr-name">${esc(settings.community||'Apartment Community')}</div><div>${esc(settings.propertyAddress1||'')}</div><div>${esc(settings.propertyAddress2||'')}</div><div>${esc(settings.propertyPhone||'')}</div></div>
 
@@ -76,6 +105,7 @@ function previewRequest(id){
       <div><div class="mr-approved">APPROVED</div></div>
     </div>
   </div>`;
+  refreshRequestNavigation();
   p.scrollIntoView({behavior:'smooth'})
 }
 function renderSummary(){const es=eventsPeriod(),body=$('#summaryRows');$('#summaryPeriod').textContent=`EMPLOYEE: ${workerName()} · Pay Period Beginning ${mdy(currentPeriodStart)} · Ending ${mdy(periodEnd())}`;body.innerHTML=es.length?es.map(e=>`<tr><td>${mdy(e.date)}</td><td>${clock(e.in)}</td><td>${clock(e.out)}</td><td>${esc(eventLabel(e))}</td><td>${esc(locationLabel(e))}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No events.</td></tr>'}

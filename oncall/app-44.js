@@ -3,6 +3,7 @@
   const VERSION='0.7.13';
 
   function applyBlankTimeReceived(id){
+    if($('#requestPreview')?.dataset.previewEventId!==String(id))return;
     const ev=(events||[]).find(e=>e.id===id);
     if(!ev||String(ev.timeReceived||'').trim())return;
     const rows=[...document.querySelectorAll('#requestPreview .mr-received-row')];

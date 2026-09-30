@@ -18,6 +18,7 @@ $('#eventEditorForm').onsubmit=e=>{e.preventDefault();const ev=events.find(x=>x.
 async function deleteEvent(id){const e=events.find(x=>x.id===id);if(!e)return;if(!await appConfirm(`Delete ${eventLabel(e)}? This removes its Maintenance Request and On-Call Summary row, but does NOT delete payroll hours.`,'Delete Event'))return;events=events.filter(x=>x.id!==id);save(K.events,events);renderAll()}
 function needsDetails(e){return e.type==='emergency'&&(/Details Pending/i.test(e.problem)||!locationLabel(e))}
 function renderRequests(){
+  refreshRequestNavigation();
   const list=$('#requestList'),es=eventsPeriod(),start=periodFolioStart();
   const input=$('#folioStartInput'),status=$('#folioStatus');
   if(input)input.value=start||'';

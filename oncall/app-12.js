@@ -165,7 +165,7 @@
   },true);
   document.addEventListener('click',e=>{
     if(!isLocked())return;
-    const t=e.target?.closest?.('.add-block,.del-block,.mark-red,.split-events,.edit-chip-event,.add-day-event,.review-field-event,.add-field-payroll,.edit-event,.delete-event,#assignFoliosBtn,#saveEventRowsBtn,#addEventRowBtn,.remove-event-row,.use-seg,.use-existing-event');
+    const t=e.target?.closest?.('.add-block,.del-block,.mark-red,.split-events,.edit-chip-event,.add-day-event,.review-field-event,.review-event,.add-field-payroll,.edit-event,.delete-event,#assignFoliosBtn,#saveEventRowsBtn,#addEventRowBtn,.remove-event-row,.use-seg,.use-existing-event');
     if(t){e.preventDefault();e.stopImmediatePropagation();toast('This pay period is DELIVERED / LOCKED. Unlock it before making changes.')}
   },true);
 

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>On-Call local payroll tests</title>
+<style>body{margin:0;font:14px system-ui}header{padding:12px;background:#edf5ff}iframe{border:0;width:100%;height:85vh}button{padding:8px}pre{white-space:pre-wrap;max-height:140px;overflow:auto}</style>
+<header><b>Local tests — synthetic Payroll</b>
+<button onclick="document.querySelector('iframe').style.width='390px'">390px mobile</button>
+<button onclick="document.querySelector('iframe').style.width='100%'">Desktop</button>
+<pre id="results">Loading…</pre></header>
+<iframe title="On-Call test workspace"></iframe>
+<script>
+// Never seed a deployed app or an origin that already contains saved user data.
+if(!['localhost','127.0.0.1'].includes(location.hostname))throw Error('Local tests only');
+if(Object.keys(localStorage).some(k=>k.startsWith('ocma_'))&&!sessionStorage.getItem('payroll-test-origin')){
+  document.querySelector('#results').textContent='Use a fresh localhost port for this test; existing On-Call data was found.';
+}else{
+  sessionStorage.setItem('payroll-test-origin','synthetic');
+  const frame=document.querySelector('iframe');
+  frame.addEventListener('load',()=>{
+    if(!frame.contentWindow.location.pathname.endsWith('/print.html'))return;
+    const script=frame.contentDocument.createElement('script');
+    script.src='../tests/pdf-download.js';frame.contentDocument.body.appendChild(script);
+  });
+  frame.src='../oncall/';
+  const timer=setInterval(()=>{
+    if(!frame.contentDocument?.documentElement?.classList.contains('app-ready')||!frame.contentWindow.navigator.serviceWorker.controller)return;
+    if(frame.contentDocument.querySelector('script[data-navigation-test]'))return;
+    const script=frame.contentDocument.createElement('script');
+    script.dataset.navigationTest='true';
+    script.src='../tests/payroll-workflow.js';frame.contentDocument.body.appendChild(script);
+  },100);
+  window.addEventListener('message',e=>{
+    if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.navigationTest){
+      clearInterval(timer);
+      document.querySelector('#results').textContent=e.data.navigationTest;
+    }
+  });
+}
+</script></html>

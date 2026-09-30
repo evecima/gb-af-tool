@@ -101,6 +101,27 @@ html.ios-pdf-document .maintenance-request-paper *{
   .period-lifecycle .row.between{align-items:flex-start}
 }
 
+/* Filled-in values only: preserve the form labels, column widths and row heights. */
+.timecard-paper .tc-line{font-size:11px;line-height:1.1}
+.timecard-paper .tc-signline{font-size:9px;line-height:1.1}
+.timecard-paper .tc-main-table td.tc-date-cell,
+.timecard-paper .tc-main-table td>span:not(.tc-day-name){font-size:9px;line-height:1.1}
+.timecard-paper .tc-main-table-notes td.tc-note-cell{font-size:7px!important}
+@media print{
+  body.print-payroll .tc-main-table td.tc-date-cell,
+  body.print-payroll .tc-main-table td>span:not(.tc-day-name){font-size:8.5px!important}
+  body.print-payroll .tc-main-table-notes td.tc-note-cell{font-size:6.8px!important}
+  .payroll-jump,.payroll-up{display:none!important}
+}
+.payroll-jump{margin:12px 0}
+.payroll-jump button,.payroll-up{min-height:44px}
+.review-event[aria-pressed="true"]{background:#e5f4e9;border-color:#16803c;color:#12602e}
+@media screen{
+  /* iOS has its own scaled stage; other narrow views must not squeeze the form. */
+  html:not(.ios-device) #payrollPreview{overflow-x:auto}
+  html:not(.ios-device) #payrollPreview .timecard-paper{min-width:8.5in}
+}
+
 /* v0.7.20 — PRINT LAYOUT ONLY. Keep paper dimensions, table geometry and data untouched.
    The original Summary form has signature rules above the signature captions,
    not underneath them. Draw the rules inside their existing fixed-height rows. */

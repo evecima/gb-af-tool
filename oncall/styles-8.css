@@ -1,4 +1,9 @@
 /* v0.6.0 — live session / emergency workflow */
+.request-preview-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 16px}
+.request-preview-nav button{min-height:44px}
+.request-preview-nav button:disabled{opacity:.45;cursor:default}
+.request-preview-nav [role="status"]{text-align:center;white-space:nowrap}
+@media print{.request-preview-nav{display:none!important}}
 .workflow-hidden-original-time,.workflow-empty-details{display:none!important}
 .workflow-received-label{position:relative}
 .workflow-received-label input{padding-right:78px}
