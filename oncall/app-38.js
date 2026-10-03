@@ -281,7 +281,14 @@
           }
         }
       }
-      Object.assign(ev,d);ev.vendor=$('#editUsedVendor').checked?vendorValue('edit'):'';if(!$('#editUsedVendor').checked)ev.vendorWork='';ev.result=ev.remarks||'';
+      Object.assign(ev,d);
+      const materialItems=typeof readMaterialEditor==='function'?readMaterialEditor():[];
+      ev.materialItems=materialItems;
+      ev.material=materialItems[0]?.material||'';
+      ev.quantity=materialItems[0]?.quantity||'';
+      ev.vendor=$('#editUsedVendor').checked?vendorValue('edit'):'';
+      if(!$('#editUsedVendor').checked)ev.vendorWork='';
+      ev.result=ev.remarks||'';
       applyTypeDefaults(ev,ev.type,oldType);
       if(ev.type==='emergency')ev.problemTitleId=titleId||(findByNameOrAlias(ev.problem)?.id||'');else delete ev.problemTitleId;
       save(K.events,events);learnEvent(ev);linkRecordsToCatalog();closeModal('eventEditorModal');renderAll();previewRequest(savedId);toast(settings.language==='es'?'Maintenance Request guardado. Vista previa actualizada.':'Maintenance Request saved. Preview updated.');
