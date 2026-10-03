@@ -16,7 +16,8 @@ function learnEvent(ev){
   if(!problem||/^emergency$/i.test(problem))return false;
   const finding=(ev.finding||'').trim(),solution=(ev.solution||'').trim(),result=(ev.remarks||ev.result||'').trim();
   if(!finding&&!solution&&!result)return false;
-  const item={id:'local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),problem,finding,solution,result,materials:ev.material?[ev.material]:[],vendor:(ev.vendor||'').trim(),vendorWork:(ev.vendorWork||'').trim(),source:'Local technician',active:true,updatedAt:new Date().toISOString()};
+  const materialNames=Array.isArray(ev.materialItems)?ev.materialItems.map(x=>String(x?.material||'').trim()).filter(Boolean):(ev.material?[String(ev.material).trim()]:[]);
+  const item={id:'local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),problem,finding,solution,result,materials:materialNames,vendor:(ev.vendor||'').trim(),vendorWork:(ev.vendorWork||'').trim(),source:'Local technician',active:true,updatedAt:new Date().toISOString()};
   const key=knowledgeKey(item),seedMatch=window.SEED_KNOWLEDGE.some(k=>knowledgeKey(k)===key),idx=localKnowledge.findIndex(k=>knowledgeKey(k)===key);
   if(seedMatch){refreshProblemFromKnowledge(problem);return false}
   if(idx>=0){item.id=localKnowledge[idx].id;localKnowledge[idx]={...localKnowledge[idx],...item};}
