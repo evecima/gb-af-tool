@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>On-Call local material tests</title>
+<style>body{margin:0;font:14px system-ui}header{padding:12px;background:#edf5ff}iframe{border:0;width:100%;height:85vh}button{padding:8px}pre{white-space:pre-wrap;max-height:160px;overflow:auto}</style>
+<header><b>Local tests — Maintenance Request materials</b>
+<button onclick="document.querySelector('iframe').style.width='390px'">390px mobile</button>
+<button onclick="document.querySelector('iframe').style.width='100%'">Desktop</button>
+<pre id="results">Loading…</pre></header>
+<iframe title="On-Call material test workspace"></iframe>
+<script>
+if(!['localhost','127.0.0.1'].includes(location.hostname))throw Error('Local tests only');
+if(Object.keys(localStorage).some(k=>k.startsWith('ocma_'))&&!sessionStorage.getItem('materials-test-origin')){
+  document.querySelector('#results').textContent='Use a fresh localhost port for this test; existing On-Call data was found.';
+}else{
+  sessionStorage.setItem('materials-test-origin','synthetic');
+  const frame=document.querySelector('iframe');
+  frame.src='../oncall/';
+  const timer=setInterval(()=>{
+    if(!frame.contentDocument?.documentElement?.classList.contains('app-ready')||!frame.contentWindow.navigator.serviceWorker.controller)return;
+    if(frame.contentDocument.querySelector('script[data-materials-test]'))return;
+    const script=frame.contentDocument.createElement('script');
+    script.dataset.materialsTest='true';
+    script.src='../tests/materials-workflow.js';
+    frame.contentDocument.body.appendChild(script);
+  },100);
+  window.addEventListener('message',e=>{
+    if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.materialsTest){
+      clearInterval(timer);
+      document.querySelector('#results').textContent=e.data.materialsTest;
+    }
+  });
+}
+</script></html>
