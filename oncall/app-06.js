@@ -9,6 +9,35 @@ function vendorNames(){return [...new Set(vendors.filter(v=>v.active!==false).ma
 function populateVendorSelect(sel,cur=''){const names=vendorNames();sel.innerHTML='<option value="">— Select —</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')+'<option value="__manual__">+ Enter Manually</option>';if(cur&&names.includes(cur))sel.value=cur;else if(cur)sel.value='__manual__';else sel.value=''}
 function syncVendorPanel(prefix,show){const panel=$(`#${prefix}VendorPanel`),sel=$(`#${prefix}VendorSelect`),manualWrap=$(`#${prefix}VendorManualWrap`);panel?.classList.toggle('hidden',!show);if(show&&sel)manualWrap?.classList.toggle('hidden',sel.value!=='__manual__')}
 function vendorValue(prefix){const sel=$(`#${prefix}VendorSelect`);if(!sel)return'';return sel.value==='__manual__'?($(`#${prefix}VendorManual`)?.value||'').trim():sel.value}
+function eventMaterialItems(e){
+  const structured=Array.isArray(e?.materialItems)?e.materialItems.map(x=>({material:String(x?.material||'').trim(),quantity:String(x?.quantity??'').trim()})).filter(x=>x.material):[];
+  if(structured.length)return structured;
+  const legacy=String(e?.material||'').trim();
+  return legacy?[{material:legacy,quantity:String(e?.quantity??'').trim()}]:[];
+}
+function materialEditorRow(item={}){
+  const material=String(item.material||''),quantity=String(item.quantity??'');
+  const removeLabel=settings.language==='es'?'Eliminar material':'Remove material';
+  return `<div class="material-row"><input class="edit-material-name" value="${esc(material)}" placeholder="${settings.language==='es'?'Material / Parte':'Material / Part'}" aria-label="${settings.language==='es'?'Material / Parte':'Material / Part'}"><input class="edit-material-qty" type="number" min="0" step="1" value="${esc(quantity)}" placeholder="Qty" aria-label="${settings.language==='es'?'Cantidad':'Quantity'}"><button type="button" class="dangerbtn remove-material-row" aria-label="${removeLabel}" title="${removeLabel}">×</button></div>`;
+}
+function bindMaterialEditor(){
+  $('#editMaterialRows .remove-material-row').forEach(btn=>btn.onclick=()=>{
+    const rows=$('#editMaterialRows .material-row');
+    if(rows.length<=1){const row=btn.closest('.material-row');row.querySelector('.edit-material-name').value='';row.querySelector('.edit-material-qty').value='';return}
+    btn.closest('.material-row')?.remove();
+  });
+}
+function renderMaterialEditor(items=[]){
+  const wrap=$('#editMaterialRows'),add=$('#addMaterialRowBtn');if(!wrap||!add)return;
+  const list=items.length?items:[{material:'',quantity:''}];
+  wrap.innerHTML=list.map(materialEditorRow).join('');
+  add.textContent=settings.language==='es'?'+ Agregar material':'+ Add Material';
+  bindMaterialEditor();
+}
+function readMaterialEditor(){
+  return $('#editMaterialRows .material-row').map(row=>({material:(row.querySelector('.edit-material-name')?.value||'').trim(),quantity:(row.querySelector('.edit-material-qty')?.value||'').trim()})).filter(x=>x.material);
+}
+$('#addMaterialRowBtn').onclick=()=>{const wrap=$('#editMaterialRows');wrap.insertAdjacentHTML('beforeend',materialEditorRow());bindMaterialEditor();wrap.querySelector('.material-row:last-child .edit-material-name')?.focus()};
 function clearEditLocationSelection(){const f=$('#eventEditorForm');if(f?.elements.fullAddress)f.elements.fullAddress.value='';const box=$('#editLocationResults');if(box)box.classList.add('hidden');const sel=$('#editSelectedLocation');if(sel)sel.classList.add('hidden')}
 function renderEditLocationMatches(q){const box=$('#editLocationResults');if(!box)return;const needle=(q||'').trim().toUpperCase().replace(/\s/g,'');if(!needle||needle==='POOL'){box.classList.add('hidden');return}const ms=window.APARTMENT_DATA.filter(a=>a.unit.toUpperCase().includes(needle)||a.building.includes(needle)||a.code.toUpperCase().includes(needle)).slice(0,12);box.innerHTML=ms.map(a=>`<button type="button" data-code="${esc(a.code)}"><div class="auto-code">${esc(a.code)}</div><div class="auto-address">${esc(apartmentDisplay(a))}</div></button>`).join('');box.classList.toggle('hidden',!ms.length);box.querySelectorAll('button').forEach(b=>b.onclick=()=>{const a=window.APARTMENT_DATA.find(x=>x.code===b.dataset.code),f=$('#eventEditorForm');if(!a||!f)return;f.elements.locationCode.value=a.code;f.elements.fullAddress.value=apartmentAddress(a);$('#editLocationSearch').value=a.code;const sel=$('#editSelectedLocation');sel.textContent=apartmentDisplay(a);sel.classList.remove('hidden');box.classList.add('hidden')})}
 $('#editLocationSearch').oninput=e=>{const f=$('#eventEditorForm');if(f.elements.type.value==='pool_open'||f.elements.type.value==='pool_close'){return}clearEditLocationSelection();renderEditLocationMatches(e.target.value)};
