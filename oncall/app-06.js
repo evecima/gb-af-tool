@@ -21,8 +21,8 @@ function materialEditorRow(item={}){
   return `<div class="material-row"><input class="edit-material-name" value="${esc(material)}" placeholder="${settings.language==='es'?'Material / Parte':'Material / Part'}" aria-label="${settings.language==='es'?'Material / Parte':'Material / Part'}"><input class="edit-material-qty" type="number" min="0" step="1" value="${esc(quantity)}" placeholder="Qty" aria-label="${settings.language==='es'?'Cantidad':'Quantity'}"><button type="button" class="dangerbtn remove-material-row" aria-label="${removeLabel}" title="${removeLabel}">×</button></div>`;
 }
 function bindMaterialEditor(){
-  $('#editMaterialRows .remove-material-row').forEach(btn=>btn.onclick=()=>{
-    const rows=$('#editMaterialRows .material-row');
+  $$('#editMaterialRows .remove-material-row').forEach(btn=>btn.onclick=()=>{
+    const rows=$$('#editMaterialRows .material-row');
     if(rows.length<=1){const row=btn.closest('.material-row');row.querySelector('.edit-material-name').value='';row.querySelector('.edit-material-qty').value='';return}
     btn.closest('.material-row')?.remove();
   });
@@ -36,7 +36,7 @@ function renderMaterialEditor(items=[]){
   bindMaterialEditor();
 }
 function readMaterialEditor(){
-  return $('#editMaterialRows .material-row').map(row=>({material:(row.querySelector('.edit-material-name')?.value||'').trim(),quantity:(row.querySelector('.edit-material-qty')?.value||'').trim()})).filter(x=>x.material);
+  return $$('#editMaterialRows .material-row').map(row=>({material:(row.querySelector('.edit-material-name')?.value||'').trim(),quantity:(row.querySelector('.edit-material-qty')?.value||'').trim()})).filter(x=>x.material);
 }
 $('#addMaterialRowBtn').onclick=()=>{const wrap=$('#editMaterialRows');wrap.insertAdjacentHTML('beforeend',materialEditorRow());bindMaterialEditor();wrap.querySelector('.material-row:last-child .edit-material-name')?.focus()};
 function clearEditLocationSelection(){const f=$('#eventEditorForm');if(f?.elements.fullAddress)f.elements.fullAddress.value='';const box=$('#editLocationResults');if(box)box.classList.add('hidden');const sel=$('#editSelectedLocation');if(sel)sel.classList.add('hidden')}
