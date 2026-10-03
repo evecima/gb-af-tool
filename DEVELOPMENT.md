@@ -33,3 +33,14 @@ Recovered from the chat “On-Call Aplication”:
 2. Increase filled-in Time Card values: implemented locally; one-page PDF sample verified.
 3. Simplify Reconcile: implemented locally; Humanity preserved.
 4. Later: Snow, Pool and edge cases, followed by multiuser/cloud work.
+
+
+## Maintenance Request materials
+
+- Maintenance Request Edit now supports multiple Material / Part rows, each with its own quantity, Add Material, and row removal.
+- Events store structured `materialItems` while retaining the first item in the legacy `material` / `quantity` fields for backward compatibility.
+- Existing legacy requests open without data loss as one editable row. Once saved, they migrate to the structured list.
+- The printable Maintenance Request renders every saved material on its own row and preserves at least the original six material lines.
+- Field-entry emergencies still allow the existing single material input; that value is also stored as a one-item structured list.
+- Local test harness: `tests/materials-workflow.html`. It covers legacy fallback, add/remove rows, persistence, compatibility fields, and printable rows.
+- JavaScript syntax checks are required before release; physical browser/iPhone and printed-output validation remain release checks.
