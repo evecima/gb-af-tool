@@ -32,6 +32,7 @@ function renderMaterialEditor(items=[]){
   const list=items.length?items:[{material:'',quantity:''}];
   wrap.innerHTML=list.map(materialEditorRow).join('');
   add.textContent=settings.language==='es'?'+ Agregar material':'+ Add Material';
+  const hint=$('#editMaterialHint');if(hint)hint.textContent=settings.language==='es'?'Una línea por material o parte.':'One line per material or part.';
   bindMaterialEditor();
 }
 function readMaterialEditor(){
