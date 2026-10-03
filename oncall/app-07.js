@@ -34,14 +34,11 @@ function previewRequest(id){
   const remarks=[e.remarks||e.result,contractor].filter(Boolean).join(' | ');
   const complete=(e.status||'Job Complete')==='Job Complete';
   const loc=requestLocationText(e),unitNo=requestUnitNo(e);
-  const materialRows=[
-    `<tr><td>${esc(e.quantity||'')}</td><td>${esc(e.material||'')}</td><td></td></tr>`,
-    '<tr><td></td><td></td><td></td></tr>',
-    '<tr><td></td><td></td><td></td></tr>',
-    '<tr><td></td><td></td><td></td></tr>',
-    '<tr><td></td><td></td><td></td></tr>',
-    '<tr><td></td><td></td><td></td></tr>'
-  ].join('');
+  const materials=eventMaterialItems(e),materialRowCount=Math.max(6,materials.length);
+  const materialRows=Array.from({length:materialRowCount},(_,i)=>{
+    const item=materials[i];
+    return `<tr><td>${item?esc(item.quantity||''):''}</td><td>${item?esc(item.material||''):''}</td><td></td></tr>`;
+  }).join('');
   const workerRows=[
     `<tr><td>${esc(e.worker||workerName())}</td><td>${mdy(e.date)}</td><td>${clock(e.in)}</td><td>${clock(e.out)}</td><td></td><td></td><td></td></tr>`,
     '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>',
