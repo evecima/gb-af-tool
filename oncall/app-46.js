@@ -118,7 +118,12 @@
     const segs=workSegments(e),ints=emergencySegments(e),paper=$('#requestPreview .maintenance-request-paper');if(!paper)return;
     const all=timelineLines(e);
     const workText=paper.querySelector('.mr-work-text');
-    if(workText&&all.length)workText.innerHTML=all.map(x=>`<div>${esc(x)}</div>`).join('');
+    // The saved Maintenance Request is the master record after Reportable Work closes.
+    // Respect technician edits to Finding / Solution; use the generated timeline only
+    // as a fallback when both saved fields are blank.
+    if(workText&&!clean(e.finding)&&!clean(e.solution)&&all.length){
+      workText.innerHTML=all.map(x=>`<div>${esc(x)}</div>`).join('');
+    }
     const special=paper.querySelector('.mr-special');
     const note=ints.map(s=>interruptionSentence(e,s)).join(' ');
     if(special&&note)special.innerHTML=`<b>SPECIAL INSTRUCTIONS</b>${esc(note)}`;
