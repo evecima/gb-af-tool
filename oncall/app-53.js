@@ -282,6 +282,7 @@
     const f=$('#'+FORM_ID),section=ensureSection();if(!f||!section)return;
     const isMandatory=ev?.type==='mandatory_ot';
     f.classList.toggle('v0729-mandatory-mode',isMandatory);
+    f.dataset.v0729MandatorySegments=isMandatory?'1':'';
     section.classList.toggle('hidden',!isMandatory);
     if(f.elements?.in)f.elements.in.readOnly=isMandatory;
     if(f.elements?.out)f.elements.out.readOnly=isMandatory;
