@@ -28,7 +28,7 @@
     const e=(events||[]).find(x=>x.id===id);
     if(!e||e.type!=='mandatory_ot')return;
     const remarks=$('#requestPreview .mr-remarks-text');
-    if(remarks)remarks.textContent=COMPLETE;
+    if(remarks&&shouldNormalizeRemarks(e.remarks))remarks.textContent=COMPLETE;
   }
 
   // Live Mandatory uses the technician's local calendar date at the exact IN click.
