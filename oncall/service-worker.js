@@ -1,5 +1,5 @@
-const VERSION='0.7.29';
-const CACHE='oncall-maintenance-v0-7-29';
+const VERSION='0.7.30';
+const CACHE='oncall-maintenance-v0-7-30';
 const V='?v='+VERSION;
 const numbered=(prefix,count)=>Array.from({length:count},(_,i)=>`./${prefix}-${String(i+1).padStart(2,'0')}.js${V}`);
 const styles=Array.from({length:8},(_,i)=>`./styles-${i+1}.css${V}`);
