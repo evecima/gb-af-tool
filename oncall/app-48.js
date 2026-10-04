@@ -80,7 +80,12 @@
     const no=paper.querySelector('.mr-location-no-line');if(no)no.textContent='';
 
     const lines=workRequestedLines(e),workText=paper.querySelector('.mr-work-text');
-    if(workText&&lines.length)workText.innerHTML=lines.map(x=>`<div>${esc(x)}</div>`).join('');
+    // Closed Reportable Work keeps its generated timeline only as a fallback.
+    // Once the technician edits Finding / Solution in the Maintenance Request,
+    // those saved fields are the master content shown in Preview / print.
+    if(workText&&!clean(e.finding)&&!clean(e.solution)&&lines.length){
+      workText.innerHTML=lines.map(x=>`<div>${esc(x)}</div>`).join('');
+    }
 
     blankMandatoryTotalTime(paper);
   }
