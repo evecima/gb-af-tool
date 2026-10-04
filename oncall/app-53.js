@@ -291,10 +291,17 @@
     const quick=quickTitleWrap();if(quick)quick.classList.toggle('v0729-hide-for-mandatory',isMandatory);
 
     if(isMandatory){
-      if(f.elements?.problem){f.elements.problem.value='Mandatory Overtime';f.elements.problem.readOnly=true}
+      if(f.elements?.problem){
+        f.elements.problem.value='Mandatory Overtime';
+        f.elements.problem.readOnly=true;
+        f.elements.problem.classList.add('v0729-fixed-title');
+      }
       renderSegments(ev);
     }else{
-      if(f.elements?.problem&&f.elements.problem.classList.contains('v0729-fixed-title'))f.elements.problem.readOnly=false;
+      if(f.elements?.problem?.classList.contains('v0729-fixed-title')){
+        f.elements.problem.readOnly=false;
+        f.elements.problem.classList.remove('v0729-fixed-title');
+      }
       clearError();
     }
   }
