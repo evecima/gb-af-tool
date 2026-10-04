@@ -311,6 +311,7 @@
     const wrapped=function(id){
       const result=baseOpen(id);
       const ev=(events||[]).find(e=>String(e.id)===String(id));
+      setMandatoryMode(ev);
       setTimeout(()=>setMandatoryMode(ev),0);
       setTimeout(()=>setMandatoryMode(ev),90);
       return result;
