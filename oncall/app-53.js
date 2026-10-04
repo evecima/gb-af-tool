@@ -308,6 +308,20 @@
     const locLabel=genericLocationLabel();if(locLabel)locLabel.classList.toggle('v0729-hide-for-mandatory',isMandatory);
     const quick=quickTitleWrap();if(quick)quick.classList.toggle('v0729-hide-for-mandatory',isMandatory);
 
+    // Mandatory Overtime is a time/work-segment container, not a resident
+    // Maintenance Request. Keep maintenance-specific fields available in the
+    // data model, but hide them from this editor mode to avoid ambiguity.
+    const findingLabel=f.elements?.finding?.closest('label');
+    if(findingLabel)findingLabel.classList.toggle('v0729-hide-for-mandatory',isMandatory);
+    const materialEditor=f.querySelector('.material-editor');
+    if(materialEditor)materialEditor.classList.toggle('v0729-hide-for-mandatory',isMandatory);
+    const vendorToggle=$('#editUsedVendor')?.closest('label');
+    if(vendorToggle)vendorToggle.classList.toggle('v0729-hide-for-mandatory',isMandatory);
+    const vendorPanel=$('#editVendorPanel');
+    if(vendorPanel)vendorPanel.classList.toggle('v0729-hide-for-mandatory',isMandatory);
+    const additionalDetails=f.elements?.dateReceived?.closest('details.form-details')||f.querySelector('details.form-details');
+    if(additionalDetails)additionalDetails.classList.toggle('v0729-hide-for-mandatory',isMandatory);
+
     if(isMandatory){
       if(f.elements?.problem){
         f.elements.problem.value='Mandatory Overtime';
