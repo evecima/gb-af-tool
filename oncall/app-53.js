@@ -91,7 +91,8 @@
       #${SECTION_ID} .v0729-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:9px}
       #${SECTION_ID} .v0729-error{color:#a62b1f;font-size:11px;font-weight:700;min-height:15px;margin-top:6px}
       #eventEditorForm.v0729-mandatory-mode input[name="in"],
-      #eventEditorForm.v0729-mandatory-mode input[name="out"]{background:#eef3f6;color:#40515d;font-weight:700}
+      #eventEditorForm.v0729-mandatory-mode input[name="out"],
+      #eventEditorForm.v0729-mandatory-mode textarea[name="solution"]{background:#eef3f6;color:#40515d;font-weight:700}
       #eventEditorForm.v0729-mandatory-mode .v0729-hide-for-mandatory{display:none!important}
       @media(max-width:760px){
         #${SECTION_ID} .v0729-row,#${SECTION_ID} .v0729-row.v0729-emergency{grid-template-columns:1fr 1fr}
@@ -207,6 +208,12 @@
     if(start)f.elements.in.value=start;if(end)f.elements.out.value=end;
     const overall=$('#v0729Overall');
     if(overall)overall.textContent=start&&end?`Overall Mandatory: ${clock(start)}–${clock(end)} · calculated from work segments`:'Overall Mandatory: complete at least one work segment.';
+
+    // Mandatory Work Segments are the source of truth for the work timeline.
+    // Keep What Did You Do? generated live from those rows so it can never
+    // drift away from the times / activity / location shown in reports.
+    const complete=rowSegments().filter(s=>timeOk(s.start)&&timeOk(s.end)&&timeMinutes(s.end)>timeMinutes(s.start));
+    if(f.elements?.solution&&complete.some(s=>s.kind==='work'))f.elements.solution.value=timelineText(complete);
   }
 
   function setError(msg=''){
@@ -255,8 +262,7 @@
     if(form?.elements?.in)form.elements.in.value=ev.in;
     if(form?.elements?.out)form.elements.out.value=ev.out;
 
-    const currentSolution=clean(form?.elements?.solution?.value);
-    if(form?.elements?.solution&&(!currentSolution||currentSolution===clean(oldTimeline)))form.elements.solution.value=newTimeline;
+    if(form?.elements?.solution)form.elements.solution.value=newTimeline;
 
     const a=activityFor(ev);
     if(a){
@@ -286,6 +292,18 @@
     section.classList.toggle('hidden',!isMandatory);
     if(f.elements?.in)f.elements.in.readOnly=isMandatory;
     if(f.elements?.out)f.elements.out.readOnly=isMandatory;
+    if(f.elements?.solution){
+      f.elements.solution.readOnly=isMandatory;
+      f.elements.solution.title=isMandatory?'Generated automatically from Mandatory Work Segments.':'';
+      let note=$('#v0729SolutionNote');
+      if(isMandatory&&!note){
+        note=document.createElement('small');
+        note.id='v0729SolutionNote';
+        note.className='v0714-optional-note';
+        note.textContent='Generated automatically from Mandatory Work Segments.';
+        f.elements.solution.insertAdjacentElement('afterend',note);
+      }else if(!isMandatory)note?.remove();
+    }
 
     const locLabel=genericLocationLabel();if(locLabel)locLabel.classList.toggle('v0729-hide-for-mandatory',isMandatory);
     const quick=quickTitleWrap();if(quick)quick.classList.toggle('v0729-hide-for-mandatory',isMandatory);
