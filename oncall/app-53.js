@@ -10,7 +10,7 @@
   const clean=v=>String(v??'').trim();
   const timeOk=t=>/^\d{2}:\d{2}$/.test(clean(t));
   const timeMinutes=t=>timeOk(t)?Number(t.slice(0,2))*60+Number(t.slice(3,5)):null;
-  const normalizeLabel=v=>clean(v)==='Work Orders'?WORK_ORDERS:(clean(v)||'Work');
+  const normalizeLabel=v=>clean(v)==='Work Orders'?WORK_ORDERS:clean(v);
   const state=()=>window.reportableWorkState||null;
 
   function activityFor(ev){
