@@ -124,7 +124,7 @@
     row.innerHTML=`
       <label class="v0729-cell"><span>Start</span><input type="time" class="v0729-start" value="${esc(seg.start||'')}"></label>
       <label class="v0729-cell"><span>End</span><input type="time" class="v0729-end" value="${esc(seg.end||'')}"></label>
-      <label class="v0729-cell v0729-wide"><span>Activity</span><input class="v0729-label" list="v0729ActivityOptions" value="${esc(normalizeLabel(seg.label||''))}" placeholder="Drywall / Work Orders / Prep..."></label>
+      <label class="v0729-cell v0729-wide"><span>Activity</span><input class="v0729-label" list="v0729ActivityOptions" value="${esc(normalizeLabel(seg.label||'')||'Work')}" placeholder="Drywall / Work Orders / Prep..."></label>
       <label class="v0729-cell v0729-wide"><span>Location</span><input class="v0729-location" value="${esc(seg.location||'')}" placeholder="3548-425A / Building / Area"></label>
       <button type="button" class="dangerbtn v0729-remove" title="Delete work segment" aria-label="Delete work segment">×</button>`;
     row.querySelector('.v0729-remove').onclick=()=>{row.remove();syncDerivedTimes();clearError()};
