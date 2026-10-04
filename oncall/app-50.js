@@ -105,7 +105,7 @@
     if(event.target?.id!=='eventEditorForm')return;
     const form=event.target,ev=(events||[]).find(x=>x.id===editingEventId);
     if(!ev)return;
-    if(eligible(ev)){
+    if(eligible(ev)&&form.dataset.v0729MandatorySegments!=='1'){
       const candidate={...ev,in:form.elements.in?.value,out:form.elements.out?.value};
       const check=syncMandatory(candidate,false);
       if(!check.ok){event.preventDefault();event.stopImmediatePropagation();toast(check.reason);return}
