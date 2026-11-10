@@ -1,6 +1,6 @@
-/* v0.7.31 — Pay Period transfer packages with safe merge (Add / Skip / Update). */
+/* v0.7.32 — Pay Period transfer packages with safe merge (Add / Skip / Update). */
 (function(){
-  const VERSION='0.7.31';
+  const VERSION='0.7.32';
   const PACKAGE_KIND='oncall-pay-period-package';
   K.periodImportSafety=NS+'period_import_safety_v1';
 
