@@ -17,7 +17,7 @@
     if(Array.isArray(value))return value.map(stable);
     if(value&&typeof value==='object'){
       const out={};
-      Object.keys(value).sort().forEach(k=>{if(k!=='updatedAt')out[k]=stable(value[k])});
+      Object.keys(value).sort().forEach(k=>{if(k!=='updatedAt'&&k!=='problemTitleId')out[k]=stable(value[k])});
       return out;
     }
     return value;
@@ -25,7 +25,7 @@
   const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
   function changedFields(a,b){
     const keys=new Set([...Object.keys(a||{}),...Object.keys(b||{})]);
-    return [...keys].filter(k=>k!=='updatedAt'&&!same(a?.[k],b?.[k])).sort();
+    return [...keys].filter(k=>k!=='updatedAt'&&k!=='problemTitleId'&&!same(a?.[k],b?.[k])).sort();
   }
 
   function collectPeriods(){
@@ -110,12 +110,29 @@
     toast(`Pay period exported: ${mdy(start)} – ${mdy(data.periodEnd)}.`);
   }
 
+  function localTitleEntry(problem){
+    const k=clean(problem).toLowerCase().replace(/\s+/g,' ');
+    if(!k)return null;
+    const entries=window.emergencyTitleCatalog?.entries||[];
+    return entries.find(e=>{
+      if(clean(e?.name).toLowerCase().replace(/\s+/g,' ')===k)return true;
+      return (e?.aliases||[]).some(a=>clean(a).toLowerCase().replace(/\s+/g,' ')===k);
+    })||null;
+  }
+
   function destinationCopy(raw){
     const localId=workerId()||'',localName=workerName()||'';
     const x=clone(raw);
     if(x&&typeof x==='object'){
       if('workerId' in x&&localId)x.workerId=localId;
       if('worker' in x&&localName)x.worker=localName;
+      // Emergency-title IDs are device-local catalog metadata. The visible
+      // title is the portable identity; translate it to this device's catalog.
+      if(clean(x.problem)){
+        const entry=localTitleEntry(x.problem);
+        if(entry)x.problemTitleId=entry.id;
+        else if('problemTitleId' in x)delete x.problemTitleId;
+      }
     }
     return x;
   }
